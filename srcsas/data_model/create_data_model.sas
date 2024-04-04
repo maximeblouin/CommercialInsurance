@@ -8,12 +8,13 @@
 
 /* Create PolicyHolder table */
 proc sql;
-    create table PolicyHolder (
+    create table data.PolicyHolder (
         PolicyHolderID char(10) label="Policy Holder ID" primary key,
         Name char(50) label="Policy Holder Name",
         Address char(100) label="Policy Holder Address",
         City char(50) label="City",
-        ProvinceCode char(2) format=$province_fmt. label="Province Code",
+        Province char(2) format=$province_fmt. label="Province",
+        Region char(3) format=$region_fmt. label="Region",
         PostalCode char(10) label="Postal Code",
         Phone char(15) label="Phone Number"
     );
@@ -21,7 +22,7 @@ quit;
 
 /* Create InsurancePolicy table */
 proc sql;
-    create table InsurancePolicy (
+    create table data.InsurancePolicy (
         PolicyID char(10) label="Policy ID" primary key,
         PolicyHolderID char(10) label="Policy Holder ID",
         StartDate date format=date9. label="Policy Start Date",
@@ -36,7 +37,7 @@ quit;
 
 /* Create AutoInsurancePolicy table */
 proc sql;
-    create table AutoInsurancePolicy (
+    create table data.AutoInsurancePolicy (
         VehicleID char(10) label="Vehicle ID" primary key,
         PolicyID char(10) label="Policy ID",
         Make char(50) label="Vehicle Make",
@@ -49,7 +50,7 @@ quit;
 
 /* Create PropertyInsurancePolicy table */
 proc sql;
-    create table PropertyInsurancePolicy (
+    create table data.PropertyInsurancePolicy (
         PropertyID char(10) label="Property ID" primary key,
         PolicyID char(10) label="Policy ID",
         Address char(100) label="Property Address",
@@ -63,7 +64,7 @@ quit;
 
 /* Create ClaimInformation table */
 proc sql;
-    create table ClaimInformation (
+    create table data.ClaimInformation (
         ClaimID char(10) label="Claim ID" primary key,
         PolicyID char(10) label="Policy ID",
         ClaimDate date format=date9. label="Claim Date",
@@ -75,7 +76,7 @@ quit;
 
 /* Create InsuranceTransaction table */
 proc sql;
-    create table InsuranceTransaction (
+    create table data.InsuranceTransaction (
         TransactionID char(10) label="Transaction ID" primary key,
         PolicyID char(10) label="Policy ID",
         TransactionDate date format=date9. label="Transaction Date",
@@ -86,7 +87,7 @@ quit;
 
 /* Create EarnedPremium table */
 proc sql;
-    create table EarnedPremium (
+    create table data.EarnedPremium (
         PolicyID char(10) label="Policy ID" primary key,
         EffectiveDate date format=date9. label="Effective Date",
         ExpirationDate date format=date9. label="Expiration Date",
@@ -96,13 +97,13 @@ proc sql;
         GeographicRegion char(50) label="Geographic Region",
         PaymentStatus char(20) label="Payment Status",
         PolicyStatus char(20) label="Policy Status",
-        PolicyDuration num label="Policy Duration" /* Number of months or years */
+        PolicyDuration num label="Policy Duration" /* Number of months */
     );
 quit;
 
 /* Create LossRatio table */
 proc sql;
-    create table LossRatio (
+    create table data.LossRatio (
         PolicyID char(10) label="Policy ID" primary key,
         TotalClaims numeric(10,2) format=dollar32.2 label="Total Claims",
         EarnedPremium numeric(10,2) format=dollar32.2 label="Earned Premium",
