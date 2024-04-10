@@ -22,7 +22,7 @@
 
     /* Error Control for i_CoverageClass */
     %if (%upcase(&i_CoverageClass.) in ("BUILDER'S RISK", "EQUIPMENT BREAKDOWN",
-        "BUILDER'S RISK - PER PROJECT", "BUILDER'S RISK - BLANKET", "ENOL",
+        "BUILDER'S RISK - PER PROJECT", "BUILDER'S RISK - BLANKET", "ENOL", "CYBER",
         "INLAND MARINE", "SEWER BACKUP", "MANUAL FORM", "N/D", "FLOOD", "SURETY BOND",
         "FARM", "EARTHQUAKE")) %then;
     %else %put WARNING: The value orl_exclusion.i_CoverageClass(&i_CoverageClass.) is not handled.;
@@ -32,7 +32,8 @@
     %else %put WARNING: The value orl_exclusion.i_RegionCode(&i_RegionCode.) is not handled.;
 
     /* ORL exclusions based on coverage class */
-    %if %upcase(&i_CoverageClass.) in ("BUILDER'S RISK - PER PROJECT", "EQUIPMENT BREAKDOWN", "SEWER BACKUP", "FLOOD", "SURETY BOND", "FARM", "EARTHQUAKE") %then %do;
+    %if %upcase(&i_CoverageClass.) in ("BUILDER'S RISK - PER PROJECT", "SEWER BACKUP",
+        "EQUIPMENT BREAKDOWN", "FLOOD", "CYBER", "SURETY BOND", "FARM", "EARTHQUAKE") %then %do;
         EXCLUDE
         %return;
     %end;
