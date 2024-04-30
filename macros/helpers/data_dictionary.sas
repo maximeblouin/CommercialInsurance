@@ -30,11 +30,6 @@
     o_htmlpath=,
     o_framename=);
 
-    /* Error handling: Check if HTML path exists */
-    /*%check_paths(i_path=&o_htmlpath)*/
-    /*%check_paths(i_path=&o_htmlpath\datasets)*/
-    /*%check_paths(i_path=&o_htmlpath\formats)*/
-
     /* Step 1: Flesh out the dataset list */
     %let NewDS=;
 
@@ -190,7 +185,7 @@
         %put &=FmtName.;
         /* PROC REPORT to generate HTML files */
         ods html
-            body="documentation/data_dictionary/formats/&&lib..&FmtName..htm"
+            body="formats/&&lib..&FmtName..htm"
             path="&o_htmlpath" (url=none)
             style=HTMLBlue;
 
@@ -234,7 +229,7 @@
             set DSinfo;
 
             if format eq "&FmtName.." then do;
-                fmtlink="&o_htmlpath./documentation/data_dictionary/formats/&&lib..&FmtName..htm";
+                fmtlink="&o_htmlpath./formats/&&lib..&FmtName..htm";
                 FormatLib="&lib.";
             end;
         run;
@@ -244,7 +239,7 @@
 
     /* Step 6: Generate Dataset Output */
     ods html
-        body="&o_htmlpath./documentation/data_dictionary/index.htm"
+        body="&o_htmlpath./index.htm"
         headtext="<title>Data Dictionary - Project: &i_project</title>";
 
     %let num_datasets = %sysfunc(countw(%str(&NewDS), %str( )));

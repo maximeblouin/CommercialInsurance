@@ -33,8 +33,7 @@ quit;
 %data_dictionary(
     i_project=SasHelp Data,
     i_dslist=stpsamp.* sashelp.cars sample_data,
-    o_htmlpath=%sysfunc(pathname(HOME))/CommercialInsurance,
+    o_htmlpath=%sysfunc(pathname(HOME))/CommercialInsurance/doc/dict,
     o_framename=data_dict.htm);
 
 %put _ALL_;
-
