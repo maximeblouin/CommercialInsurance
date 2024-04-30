@@ -1,28 +1,46 @@
+/**
+    \file
+    \ingroup    MACROS
+    \brief      Macro for generating a data dictionary
+    \details    This macro generates a data dictionary for specified datasets,
+                including variable information and formats.
+    \author     Maxime Blouin
+    \date       29APR2024
+    \param      i_project Name of the data project (not used)
+    \param      i_dslist List of datasets to include in the data dictionary
+    \param      o_htmlpath Output HTML path for the data dictionary
+    \param      o_framename Name of the HTML frame (not used)
+    \sa         https://support.sas.com/resources/papers/proceedings/proceedings/sugi27/p099-27.pdf
+    \remark     Here's an example usage of the `data_dictionary`:
+                %data_dictionary(
+                    i_project=SasHelp Data,
+                    i_dslist=stpsamp.* sashelp.cars sample_data,
+                    o_htmlpath=%sysfunc(pathname(HOME))/CommercialInsurance,
+                    o_framename=data_dict.htm);
+    \todo       The parameter &i_project is not used in the macro. It's the name of the data project.
+    \todo       The HTML frame is not working. We should have left pane with the list of dataset link.
+                When we click on the link the metadata show up on the right panel. So parameter &o_framename.
+                is not used.
+*/
 
-/*https://support.sas.com/resources/papers/proceedings/proceedings/sugi27/p099-27.pdf*/
-
-
-%macro CheckPaths(dname=);
-    %let rc = %sysfunc(system(md "&dname"));
-%mend CheckPaths;
-
+/** \cond */
 
 %macro data_dictionary(
-    project=,
-    htmlpath=,
-    framename=,
-    dslist=);
+    i_project=,
+    i_dslist=,
+    o_htmlpath=,
+    o_framename=);
 
-    /* Step 1: Determine if Paths Exist */
-    *%CheckPaths(dname=&htmlpath);
-    *%CheckPaths(dname=&htmlpath\datasets);
-    *%CheckPaths(dname=&htmlpath\formats);
+    /* Error handling: Check if HTML path exists */
+    /*%check_paths(i_path=&o_htmlpath)*/
+    /*%check_paths(i_path=&o_htmlpath\datasets)*/
+    /*%check_paths(i_path=&o_htmlpath\formats)*/
 
-    /* Step 2: Flesh out the dataset list */
-    %let NumDS = %sysfunc(countw(&dslist));
+    /* Step 1: Flesh out the dataset list */
+    %let NumDS = %sysfunc(countw(&i_dslist));
     %put &=NumDS;
     %do i = 1 %to &NumDS;
-        %let _piece = %scan(&dslist, &i, %str( ));
+        %let _piece = %scan(&i_dslist, &i, %str( ));
         %put &=_piece.;
         /* Process table without libname */
         %if %index(&_piece, .) eq 0 %then %do;
@@ -44,7 +62,7 @@
     %let NewDS="WORK.SAMPLE_DATA" "STPSAMP.STPBGT" "STPSAMP.STPEURO" "STPSAMP.STPSALE" "SASHELP.CARS";
     %put &=NewDS.;
 
-    /* Step 3: Get Variable Information */
+    /* Step 2: Get Variable Information */
     /* SQL query to retrieve variable information */
     proc sort data=sashelp.vcolumn out=vcolumn; by libname memname; run;
     proc sort data=sashelp.vtable out=vtable; by libname memname; run;
@@ -56,7 +74,7 @@
         where catx('.', libname, memname) in (&NewDS);
     run;
 
-    /* Step 4: Get a List of the Available Formats */
+    /* Step 3: Get a List of the Available Formats */
     /* Retrieve FMTSEARCH value */
     %let FmtList = %upcase(%cmpres(%sysfunc(getoption(fmtsearch))));
     /* Strip parentheses from the value */
@@ -97,7 +115,7 @@
         %end;
     run;
 
-    /* Step 5: Match Formats to Variable List */
+    /* Step 4: Match Formats to Variable List */
 
     /* Unduplicate dataset by format name and position in the FMTSEARCH list */
     proc sort data=_FmtList nodupkey out=_FmtListUndup;
@@ -137,7 +155,8 @@
         order by libname, memname;
     quit;
 
-    /* Step 6.1: Create a macro variable containing all format names */
+    /* Step 5: Generate HTML files for formats */
+    /* Create a macro variable containing all format names */
     proc sql noprint;
         select distinct format, libname
         into :format_array separated by ' ', :fmtlib_array separated by ' '
@@ -147,7 +166,7 @@
     %put &=format_array.;
     %put &=fmtlib_array.;
 
-    /* Step 2: Loop through the format names and create CNTLOUT datasets */
+    /* Loop through the format names and create CNTLOUT datasets */
     %let num_formats = %sysfunc(countw(&format_array.));
     %do i = 1 %to &num_formats.;
         %let lib=%scan(&fmtlib_array., &i., ' ');
@@ -157,7 +176,7 @@
         /* PROC REPORT to generate HTML files */
         ods html
             body="documentation/data_dictionary/formats/&&lib..&FmtName..htm"
-            path="&htmlpath" (url=none)
+            path="&o_htmlpath" (url=none)
             style=HTMLBlue;
 
         title "Contents of format: &FmtName - (in catalog: &&lib)";
@@ -200,7 +219,7 @@
             set DSinfo;
 
             if format eq "&FmtName.." then do;
-                fmtlink="&htmlpath./documentation/data_dictionary/formats/&&lib..&FmtName..htm";
+                fmtlink="&o_htmlpath./documentation/data_dictionary/formats/&&lib..&FmtName..htm";
                 FormatLib="&lib.";
             end;
         run;
@@ -209,7 +228,7 @@
     %end;
 
     /* Step 6: Generate Dataset Output */
-    ods html body="&htmlpath./documentation/data_dictionary/index.htm";
+    ods html body="&o_htmlpath./documentation/data_dictionary/index.htm";
 
     %let num_datasets = %sysfunc(countw(%str(&NewDS), %str( )));
     %put &=num_datasets.;
@@ -266,43 +285,4 @@
 
 %mend data_dictionary;
 
-
-
-data sample_data;
-    input id name $ gender $ age;
-    datalines;
-1 John M 25
-2 Alice F 30
-3 Bob M 35
-4 Mary F 40
-;
-run;
-
-proc format;
-    value $gender_fmt
-    'M' = 'Male'
-    'F' = 'Female'
-    ;
-
-    value age_group_fmt
-    low - 20 = 'Under 20'
-    21 - 30 = '21-30'
-    31 - 40 = '31-40'
-    41 - high = 'Over 40'
-    ;
-run;
-/* Apply the format to the dataset */
-proc datasets library=work nodetails;
-    modify sample_data;
-    format gender $gender_fmt. age age_group_fmt.;
-quit;
-
-%data_dictionary(
-    project=SasHelp Data,
-    htmlpath=%sysfunc(pathname(HOME))/CommercialInsurance,
-    framename=data_dict.htm,
-    dslist=stpsamp.* sashelp.cars sample_data);
-
-%put _ALL_;
-
-
+/** \endcond */

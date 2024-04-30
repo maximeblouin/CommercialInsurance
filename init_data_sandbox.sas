@@ -20,7 +20,7 @@
             %end;
         %else %if %qscan(&name, 2, .)=%then
             %do;
-                %list_files(&dir//&name, &ext);
+                %list_files(&dir/&name, &ext);
             %end;
     %end;
     %let rc=%sysfunc(dclose(&did));
