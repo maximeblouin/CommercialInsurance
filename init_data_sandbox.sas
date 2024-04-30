@@ -27,7 +27,7 @@
     %let rc=%sysfunc(filename(filrf));
 %mend list_files;
 
-%list_files(%sysfunc(pathname(HOME))/CommercialInsurance/analytics, sas);
+%list_files(%sysfunc(pathname(HOME))/CommercialInsurance/macros/analytics, sas);
 %list_files(%sysfunc(pathname(HOME))/CommercialInsurance/macros, sas);
 
 

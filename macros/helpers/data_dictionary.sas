@@ -7,7 +7,7 @@
 %mend CheckPaths;
 
 
-%macro DataDictionary(
+%macro data_dictionary(
     project=,
     htmlpath=,
     framename=,
@@ -228,7 +228,7 @@
         %let maxlen = 32;
 
         proc report data=DSinfo (where=(libname eq "&_lib." and memname eq "&memname."))
-                nowd headline /*headskip*/ split='*'
+                nowd headline headskip split='*'
                 contents='Variable List';
             column name fmtlink type length format
                 FormatLib informat idxusage label;
@@ -264,7 +264,7 @@
     %end;
     ods html close;
 
-%mend DataDictionary;
+%mend data_dictionary;
 
 
 
@@ -297,7 +297,7 @@ proc datasets library=work nodetails;
     format gender $gender_fmt. age age_group_fmt.;
 quit;
 
-%DataDictionary(
+%data_dictionary(
     project=SasHelp Data,
     htmlpath=%sysfunc(pathname(HOME))/CommercialInsurance,
     framename=data_dict.htm,
