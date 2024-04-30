@@ -17,7 +17,6 @@
                     i_dslist=stpsamp.* sashelp.cars sample_data,
                     o_htmlpath=%sysfunc(pathname(HOME))/CommercialInsurance,
                     o_framename=data_dict.htm);
-    \todo       The parameter &i_project is not used in the macro. It's the name of the data project.
     \todo       The HTML frame is not working. We should have left pane with the list of dataset link.
                 When we click on the link the metadata show up on the right panel. So parameter &o_framename.
                 is not used.
@@ -228,7 +227,9 @@
     %end;
 
     /* Step 6: Generate Dataset Output */
-    ods html body="&o_htmlpath./documentation/data_dictionary/index.htm";
+    ods html
+        body="&o_htmlpath./documentation/data_dictionary/index.htm"
+        headtext="<title>Data Dictionary - Project: &i_project</title>";
 
     %let num_datasets = %sysfunc(countw(%str(&NewDS), %str( )));
     %put &=num_datasets.;
