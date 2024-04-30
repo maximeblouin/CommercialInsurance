@@ -36,29 +36,45 @@
     /*%check_paths(i_path=&o_htmlpath\formats)*/
 
     /* Step 1: Flesh out the dataset list */
+    %let NewDS=;
+
     %let NumDS = %sysfunc(countw(&i_dslist));
     %put &=NumDS;
     %do i = 1 %to &NumDS;
-        %let _piece = %scan(&i_dslist, &i, %str( ));
+        %let _piece = %upcase(%scan(&i_dslist, &i, %str( )));
         %put &=_piece.;
+
+        /* Check if _piece is empty */
+        %if (%length(&_piece) <= 0) %then %do;
+            %goto CONTINUE_LOOP;
+        %end;
+
         /* Process table without libname */
         %if %index(&_piece, .) eq 0 %then %do;
             %let _piece = "WORK.&_piece";
+            %let NewDS=&NewDS &_piece;
         %end;
 
         /* Process wildcards */
-        %if %index(&_piece, *) ne 0 %then %do;
+        %else %if %index(&_piece, *) ne 0 %then %do;
             proc sql noprint;
                 select CAT('"', compress(libname||'.'||memname), '"')
                 into :BigList separated by ' '
                 from sashelp.vstable
-                where libname eq upcase("%scan(&_piece,1,.)");
+                where libname eq "%scan(&_piece,1,.)";
             quit;
-            %put &=BigList;
+            %let NewDS=&NewDS &BigList;
         %end;
+
+        /* Process table with libname */
+        %else %if %index(&_piece, .) ne 0 %then %do;
+            %let _piece = "&_piece";
+            %let NewDS=&NewDS &_piece;
+        %end;
+
+        %CONTINUE_LOOP:
     %end;
 
-    %let NewDS="WORK.SAMPLE_DATA" "STPSAMP.STPBGT" "STPSAMP.STPEURO" "STPSAMP.STPSALE" "SASHELP.CARS";
     %put &=NewDS.;
 
     /* Step 2: Get Variable Information */
@@ -89,7 +105,7 @@
 
     %put &=fixfmtp.;
 
-    %let NumCats=3;
+    %let NumCats= %sysfunc(countw(&FmtList));
 
     /* Process FMTSEARCH value */
     data _FmtList;
@@ -132,7 +148,7 @@
 
     /* Create _FmtHits dataset containing matched formats */
     proc sql;
-        create table _FmtHits as /* Empty */
+        create table _FmtHits as
         select distinct
             h.FormatEntry as ObjName,
             'FORMAT' as ObjType,
