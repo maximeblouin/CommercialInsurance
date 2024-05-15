@@ -11,7 +11,7 @@
                 - Number of distinct values
     \author     Maxime Blouin
     \date       15MAY2024
-    \param      i_dsn Input dataset name (defaults to the last dataset in the session if not provided)
+    \param      i_dsn Input dataset name (default _LAST_)
     \param      o_dsn Output dataset name
     \return     Prints the statistics for each column and creates an output
                 dataset containing the statistics.
@@ -24,7 +24,7 @@
 /** \cond */
 
 %macro get_stats_for_data_cleaning(
-    i_dsn=_LAST_ /* Input dataset name (defaults to the last dataset in the session if not provided) */,
+    i_dsn=_LAST_ /* Input dataset name (default _LAST_) */,
     o_dsn= /* Output dataset name */);
 
     /* Check if dataset names are provided */
@@ -75,15 +75,26 @@
             quit;
         %end;
 
-        /* Get the number of rows in the stats_temp dataset including missing values */
+        /* Get the number of rows in the stats_temp dataset */
         %let dsid_stat=%sysfunc(open(work.stats_temp));
         %let nb_distinct_value=%sysfunc(attrn(&dsid_stat, nobs));
         %let rc=%sysfunc(close(&dsid_stat));
 
         /* Output to dataset */
         proc sql noprint;
-            insert into &o_dsn. (Variable_Name, Variable_Type, Variable_Length, Longest_Length, Num_Distinct_Values)
-            values ("&varname", &vartype, &varlen, &max_length, &nb_distinct_value);
+            insert into &o_dsn. (
+                Variable_Name,
+                Variable_Type,
+                Variable_Length,
+                Longest_Length,
+                Num_Distinct_Values)
+
+            values (
+                "&varname",
+                "&vartype",
+                &varlen,
+                &max_length,
+                &nb_distinct_value);
         quit;
     %end;
 
