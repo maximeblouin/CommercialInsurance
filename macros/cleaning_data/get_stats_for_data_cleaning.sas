@@ -11,7 +11,7 @@
                 - Number of distinct values
     \author     Maxime Blouin
     \date       15MAY2024
-    \param      i_dsn Input dataset name
+    \param      i_dsn Input dataset name (defaults to the last dataset in the session if not provided)
     \param      o_dsn Output dataset name
     \return     Prints the statistics for each column and creates an output
                 dataset containing the statistics.
@@ -24,19 +24,19 @@
 /** \cond */
 
 %macro get_stats_for_data_cleaning(
-    i_dsn= /* Input dataset name */,
+    i_dsn=_LAST_ /* Input dataset name (defaults to the last dataset in the session if not provided) */,
     o_dsn= /* Output dataset name */);
 
     /* Check if dataset names are provided */
     %if %length(&i_dsn) eq 0 or %length(&o_dsn) eq 0 %then %do;
         %put ERROR: Dataset names are not provided.;
-        %return;
+        %abort;
     %end;
 
     /* Check if input dataset exists */
     %if %sysfunc(exist(&i_dsn)) eq 0 %then %do;
         %put ERROR: Dataset &i_dsn. does not exist.;
-        %return;
+        %abort;
     %end;
 
     /* Get the number of variables in the dataset */
@@ -47,6 +47,7 @@
     proc sql noprint;
         create table &o_dsn. (
             Variable_Name char(32) label="Variable Name",
+            Variable_Type char(1) label="Variable Type",
             Variable_Length num label="Variable Length",
             Longest_Length num label="Longest value length",
             Num_Distinct_Values num label="Number of Distinct Values"
@@ -65,7 +66,7 @@
             table &varname. / missing out=stats_temp;
         run;
 
-        /* Get max length */
+        /* Get max length (for character variables)*/
         %let max_length = .;
         %if "&vartype" eq "C" %then %do;
             proc sql noprint;
@@ -74,22 +75,15 @@
             quit;
         %end;
 
-        /* Get number of distinct values */
-        proc sql noprint;
-            select count(distinct &varname.) into :nb_distinct_value
-            from stats_temp;
-        quit;
-
-        /* Print the variable name and information */
-        %put Variable Name: &varname;
-        %put > Variable Length: &varlen;
-        %put > Longest Value Length: &max_length;
-        %put > Number of Distinct Values: &nb_distinct_value;
+        /* Get the number of rows in the stats_temp dataset including missing values */
+        %let dsid_stat=%sysfunc(open(work.stats_temp));
+        %let nb_distinct_value=%sysfunc(attrn(&dsid_stat, nobs));
+        %let rc=%sysfunc(close(&dsid_stat));
 
         /* Output to dataset */
         proc sql noprint;
-            insert into &o_dsn. (Variable_Name, Variable_Length, Longest_Length, Num_Distinct_Values)
-            values ("&varname", &varlen, &max_length, &nb_distinct_value);
+            insert into &o_dsn. (Variable_Name, Variable_Type, Variable_Length, Longest_Length, Num_Distinct_Values)
+            values ("&varname", &vartype, &varlen, &max_length, &nb_distinct_value);
         quit;
     %end;
 
