@@ -6,7 +6,7 @@
     \param      io_dsn The dataset to add the nbDoss variable
 */
 
-/** \cond*/
+/** \cond */
 
 %macro count_claims(io_dsn);
 
@@ -34,7 +34,7 @@
     %let rc=%sysfunc(close(&dsid));
 
     /* Check for missing values in required variables */
-    data _mull_;
+    data _null_;
         set &io_dsn. end=lastobs;
 
         /* Check for missing values */
@@ -63,4 +63,4 @@
 
 %mend count_claims;
 
-/** \endcond*/
+/** \endcond */
