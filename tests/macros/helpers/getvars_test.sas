@@ -1,7 +1,7 @@
 /**
     \file
     \ingroup    MACROS_HELPERS_TEST
-    \brief      Tests for getvars.sas
+    \brief      Tests for get_vars.sas
     \details    Example for a test scenario with the following features:
                 - check value of macro symbol with assertEquals.sas
                 - scan log with assertLog.sas
@@ -13,7 +13,7 @@
 
 /** \cond */
 
-%initScenario(i_desc=Tests for getvars.sas);
+%initScenario(i_desc=Tests for get_vars.sas);
 
 /*-- simple example with sashelp.class ---------------------------------------*/
 %macro testcase();
@@ -21,11 +21,11 @@
 
     /* start testcase */
     %initTestcase(
-        i_object=getvars.sas,
+        i_object=get_vars.sas,
         i_desc=%str(simple example with sashelp.class))
 
     /* call */
-    %let vars=%getvars(sashelp.class);
+    %let vars=%get_vars(sashelp.class);
     %endTestcall()
 
     /* assert */
@@ -44,11 +44,11 @@
 
     /* start testcase */
     %initTestcase(
-        i_object=getvars.sas,
+        i_object=get_vars.sas,
         i_desc=%str(simple example with sashelp.class, different delimiter))
 
     /* call */
-    %let vars=%getvars(i_data=sashelp.class, i_dlm=%str(,));
+    %let vars=%get_vars(i_data=sashelp.class, i_dlm=%str(,));
 
     %endTestcall()
 
@@ -75,11 +75,11 @@
 
     /* start testcase */
     %initTestcase(
-        i_object=getvars.sas,
+        i_object=get_vars.sas,
         i_desc=%str(example with variable names containing special characters))
 
     /* call */
-    %let vars="%getvars(test,i_dlm=%str(%",%"))";
+    %let vars="%get_vars(test,i_dlm=%str(%",%"))";
     %endTestcall()
 
     /* assert */
@@ -101,11 +101,11 @@
 
     /* start testcase */
     %initTestcase(
-        i_object=getvars.sas,
+        i_object=get_vars.sas,
         i_desc=%str(example with empty dataset))
 
     /* call */
-    %let vars=%getvars(test);
+    %let vars=%get_vars(test);
     %endTestcall()
 
     /* assert */
@@ -125,11 +125,11 @@
 
     /* start testcase */
     %initTestcase(
-        i_object=getvars.sas,
+        i_object=get_vars.sas,
         i_desc=%str(example without dataset specified))
 
     /* call */
-    %let vars=%getvars();
+    %let vars=%get_vars();
     %endTestcall()
 
     /* assert */
@@ -149,11 +149,11 @@
 
     /* start testcase */
     %initTestcase(
-        i_object=getvars.sas,
+        i_object=get_vars.sas,
         i_desc=%str(example with invalid dataset))
 
     /* call */
-    %let vars=%getvars(xxx);
+    %let vars=%get_vars(xxx);
     %endTestcall()
 
     /* assert */
