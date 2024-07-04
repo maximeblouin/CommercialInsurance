@@ -226,6 +226,7 @@
 
         /* Add fmtlink and FormatLib to work.DSinfo */
         data DSinfo;
+            format fmtlink $256. FormatLib $8.;
             set DSinfo;
 
             if format eq "&FmtName.." then do;
