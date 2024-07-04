@@ -48,14 +48,15 @@
         i_desc=%str(simple example with sashelp.class, different delimiter))
 
     /* call */
-    %let vars=%getvars(sashelp.class,dlm=%str(,));
+    %let vars=%getvars(i_data=sashelp.class, i_dlm=%str(,));
+
     %endTestcall()
 
     /* assert */
     %assertEquals(
         i_actual=&vars,
         i_expected=%str(Name,Sex,Age,Height,Weight),
-        i_desc=check variables)
+        i_desc=Check variables)
 
     /* end testcase */
     %endTestcase()
@@ -78,7 +79,7 @@
         i_desc=%str(example with variable names containing special characters))
 
     /* call */
-    %let vars="%getvars(test,dlm=%str(%",%"))";
+    %let vars="%getvars(test,i_dlm=%str(%",%"))";
     %endTestcall()
 
     /* assert */

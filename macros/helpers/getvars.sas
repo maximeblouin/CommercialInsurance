@@ -1,11 +1,8 @@
 /**
     \file
     \ingroup    MACROS_HELPERS
-
-    \brief      return variable names for a SAS dataset
-
+    \brief      Return variable names for a SAS dataset
     \details    Example: %put %getVars(dataset);
-
     \author     Maxime Blouin
     \date       14JUL2022
     \param      i_data SAS dataset to return variable names from
@@ -16,20 +13,24 @@
 /** \cond */
 
 %macro getVars(
-    data,
-    dlm=);
+    i_data /*SAS dataset to return variable names from*/,
+    i_dlm= /*delimiter, default is a blank*/);
 
     %local varlist dsid i;
-    %if "&dlm"="" %then %let dlm=%str( );
-    %let dsid = %sysfunc(open(&data));
-    %if &dsid %then %do ;
-    %do i=1 %to %sysfunc(attrn(&dsid,NVARS));
-        %if &i=1 %then
-            %let varlist = %sysfunc(varname(&dsid,&i));
-        %else
-            %let varlist = &varlist.&dlm.%sysfunc(varname(&dsid,&i));
-    %end;
-    %let dsid = %sysfunc(close(&dsid));
+
+    %if "&i_dlm"="" %then %let dlm=%str( );
+
+    %let dsid = %sysfunc(open(&i_data));
+
+    %if &dsid %then %do;
+        %do i=1 %to %sysfunc(attrn(&dsid,NVARS));
+            %if &i=1 %then
+                %let varlist = %sysfunc(varname(&dsid,&i));
+            %else
+                %let varlist = &varlist.&i_dlm.%sysfunc(varname(&dsid,&i));
+        %end;
+
+        %let dsid = %sysfunc(close(&dsid));
     %end;
 
     &varlist
