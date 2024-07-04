@@ -21,7 +21,7 @@
     %if %sysfunc(exist(&i_library..&i_table)) %then %do;
         %let l_dsid=%sysfunc(open(&i_library..&i_table));
 
-        %if %sysfunc(attrn(&l_disd, PW)) %then %do;
+        %if %sysfunc(attrn(&l_dsid, PW)) %then %do;
             %if %length(&i_password) eq 0 %then
                 %put WARNING: &i_library..&i_table is password protected and you did not provide a password.;
             %else %do;
@@ -29,7 +29,7 @@
 
                 %let rc=%sysfunc(close(&l_dsid));
 
-                proc datasets nodetails nolist library=&library;
+                proc datasets nodetails nolist library=&i_library;
                     delete &i_table (alter=&i_password);
                 quit;
 
