@@ -8,7 +8,7 @@
                If i_not is set to 1, the check of the assertion will fail in case the message is found in the log.
 
    \version    \$Revision: 791 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-01-25 08:13:41 +0100 (Di., 25 Jan. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

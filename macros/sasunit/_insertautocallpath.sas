@@ -7,7 +7,7 @@
                If it is then the fileref is inserted otherwise the string is enclosed in double quotes and inserted.               
 
    \version    \$Revision: 790 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-01-25 08:12:52 +0100 (Di., 25 Jan. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

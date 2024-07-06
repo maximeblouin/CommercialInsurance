@@ -10,9 +10,9 @@
                Eventually needed renaming of key variables takes place automatically.               
                      
 
-   \version    \$Revision: 743 $
-   \author     \$Author: klandwich $
-   \date       \$Date: 2020-10-05 11:49:23 +0200 (Mo., 05 Okt. 2020) $
+   \version    Revision: 743
+   \author     Klandwich
+   \date       2020-10-05
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
                Here you can find the SASUnit documentation, release notes and license information.
@@ -216,7 +216,7 @@
    %*** check for valid parameters*;
    %IF (&l_treatMissings. NE IGNORE AND &l_treatMissings. NE DISALLOW AND &l_treatMissings. NE VALUE) %THEN %DO;
       %LET l_actual = -22;
-      %LET l_errMsg = %bquote(Invalid argument für parameter treatMissings (&l_treatMissings));
+      %LET l_errMsg = %bquote(Invalid argument fï¿½r parameter treatMissings (&l_treatMissings));
       %GOTO Update;
    %END;
 

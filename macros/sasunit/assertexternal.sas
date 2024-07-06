@@ -9,7 +9,7 @@
                The assert checks if the return code of the script matches the expected return code.
 
    \version    \$Revision: 795 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-02-18 10:25:06 +0100 (Fr., 18 Feb. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

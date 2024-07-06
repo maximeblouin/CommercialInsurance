@@ -11,7 +11,7 @@
                changed (last modification data as SAS datetime).
 
    \version    \$Revision: 793 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-01-25 09:25:57 +0100 (Di., 25 Jan. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

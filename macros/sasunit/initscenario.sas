@@ -11,7 +11,7 @@
                - Setting of flags g_inScenario, g_inTestcase and g_inTestCall
 
    \version    \$Revision: 794 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-01-27 12:28:33 +0100 (Do., 27 Jan. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

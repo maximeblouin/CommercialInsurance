@@ -12,7 +12,7 @@
                Please refer to <A href="https://sourceforge.net/p/sasunit/wiki/User's%20Guide/" target="_blank">SASUnit User's Guide</A>
 
    \version    \$Revision: 816 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-05-23 07:58:13 +0200 (Mo., 23 Mai 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

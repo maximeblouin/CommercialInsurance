@@ -5,7 +5,7 @@
    \brief      macro function, that makes path containing only slashes. For unix/aix nothing to do here. Backslahes are allowed for escaping characters. 
 
    \version    \$Revision: 747 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2020-10-08 07:38:25 +0200 (Do., 08 Okt. 2020) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

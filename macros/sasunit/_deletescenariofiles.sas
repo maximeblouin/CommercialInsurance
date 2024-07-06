@@ -6,7 +6,7 @@
                Called before a scenario is being executed in order to avoid disused files
 
    \version    \$Revision: 763 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-04-12 11:54:23 +0200 (Mo., 12 Apr. 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

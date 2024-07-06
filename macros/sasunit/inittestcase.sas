@@ -11,7 +11,7 @@
                - Setting of flag g_inTestcase
 
    \version    \$Revision: 781 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-21 12:34:05 +0200 (Fr., 21 Mai 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

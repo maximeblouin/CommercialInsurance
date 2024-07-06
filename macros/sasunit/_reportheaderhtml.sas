@@ -5,7 +5,7 @@
    \brief      create HTML header for a page in the HTML report
 
    \version    \$Revision: 772 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-06 10:19:40 +0200 (Do., 06 Mai 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

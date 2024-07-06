@@ -6,9 +6,9 @@
               extract the file name and the path to the file (without file name)
               Example: The absolute path C:/temp/test.sas splitted into the two strings C:/temp and test.sas
 
-   \version    \$Revision: 743 $
-   \author     \$Author: klandwich $
-   \date       \$Date: 2020-10-05 11:49:23 +0200 (Mo., 05 Okt. 2020) $
+   \version    Revision: 743
+   \author     Klandwich
+   \date       2020-10-05
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
                Here you can find the SASUnit documentation, release notes and license information.

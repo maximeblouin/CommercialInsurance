@@ -5,7 +5,7 @@
    \brief      escapes blanks with backslashes if runnign under linux or aix
 
    \version    \$Revision: 635 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2019-02-28 16:50:25 +0100 (Do., 28 Feb. 2019) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

@@ -21,7 +21,7 @@
                Development of SASUnit is hosted on SourceForge (https://sourceforge.net/projects/sasunit/) and all source code, documentation and support options can be found there.
 
    \version    \$Revision: 509 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2017-06-22 13:05:04 +0200 (Do., 22 Juni 2017) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

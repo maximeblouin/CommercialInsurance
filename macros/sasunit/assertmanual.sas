@@ -5,7 +5,7 @@
    \brief      Servers as a placeholder for manual actions. Similar the assetReport but does not rely on output files
 
    \version    \$Revision: 815 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-05-23 07:50:49 +0200 (Mo., 23 Mai 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

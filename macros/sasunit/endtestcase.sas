@@ -7,7 +7,7 @@
                Result of the tests is added to the test repository.
 
    \version    \$Revision: 818 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-05-23 08:02:21 +0200 (Mo., 23 Mai 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

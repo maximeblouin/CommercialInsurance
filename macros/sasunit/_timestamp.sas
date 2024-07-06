@@ -10,9 +10,9 @@
                The following call writes a specific datetime to the SAS log: 
                \%PUT \%timestamp('01JAN2000:00:00:00'dt); 
 
-   \version    \$Revision: 743 $
-   \author     \$Author: klandwich $
-   \date       \$Date: 2020-10-05 11:49:23 +0200 (Mo., 05 Okt. 2020) $
+   \version    Revision: 743
+   \author     Klandwich
+   \date       2020-10-05
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
                Here you can find the SASUnit documentation, release notes and license information.

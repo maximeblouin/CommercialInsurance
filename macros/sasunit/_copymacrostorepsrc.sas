@@ -5,7 +5,7 @@
    \brief      Copy macros source codes to rep directory, so that they can be accessed even when rep folder is moved.
 
    \version    \$Revision: 768 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-04-14 11:39:06 +0200 (Mi., 14 Apr. 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

@@ -19,9 +19,9 @@
                If i_verbose has value 1, a message is being written to the SAS log 
                even when i_errorcode is not a true condition.
 
-   \version    \$Revision: 743 $
-   \author     \$Author: klandwich $
-   \date       \$Date: 2020-10-05 11:49:23 +0200 (Mo., 05 Okt. 2020) $
+   \version    Revision: 743
+   \author     Klandwich
+   \date       2020-10-05
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
                Here you can find the SASUnit documentation, release notes and license information.

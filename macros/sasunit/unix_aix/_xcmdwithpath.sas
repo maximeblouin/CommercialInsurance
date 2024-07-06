@@ -5,7 +5,7 @@
    \brief      run an operation system command
 
    \version    \$Revision: 784 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-06-07 15:35:50 +0200 (Mo., 07 Juni 2021) $
 
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
@@ -40,7 +40,7 @@
    %LET &r_rc = &sysrc.;
    
    %_issueDebugMessage (&g_currentLogger., _xcmdWithPath: %str(======== OS Command Start ========));
-   /* Evaluate sysexec´s return code*/
+   /* Evaluate sysexecï¿½s return code*/
    %IF &sysrc. = &i_expected_shell_rc. %THEN %DO;
       %_issueDebugMessage (&g_currentLogger., _xcmdWithPath: Sysrc=ExpectedRC: &sysrc.=&i_expected_shell_rc. -> SYSEXEC SUCCESSFUL);
    %END;

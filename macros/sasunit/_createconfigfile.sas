@@ -5,7 +5,7 @@
    \brief      Creates a SAS config file for starting SASUnit in batch
 
    \version    \$Revision: 780 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-21 12:31:41 +0200 (Fr., 21 Mai 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

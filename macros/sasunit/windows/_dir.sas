@@ -11,7 +11,7 @@
                changed (last modification data as SAS datetime).
 
    \version    \$Revision: 774 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-10 14:56:09 +0200 (Mo., 10 Mai 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
@@ -56,7 +56,7 @@
    %IF &i_recursive %then %let s=/S;
    
    %_issueTraceMessage (&g_currentLogger., _dir: %str(======== OS Command Start ========));
-   /* Evaluate sysexec´s return code */
+   /* Evaluate sysexecï¿½s return code */
    %SYSEXEC(dir &s /a-d /on %unquote(&l_i_path.) > "&dirfile" 2>&1);
    %IF (&sysrc. = 0) %THEN %DO;
       %_issueTraceMessage (&g_currentLogger., _dir: Sysrc : &sysrc. -> SYSEXEC SUCCESSFUL);

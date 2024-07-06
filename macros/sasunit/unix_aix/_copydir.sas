@@ -6,7 +6,7 @@
                Uses Windows XCOPY or Unix cp
 
    \version    \$Revision: 784 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-06-07 15:35:50 +0200 (Mo., 07 Juni 2021) $
 
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
@@ -35,7 +35,7 @@
    %SYSEXEC(cp -R &l_i_from. &l_i_to. > "&logfile" 2>&1);
    
    %_issueDebugMessage (&g_currentLogger., _copyDir: %str(======== OS Command Start ========));
-    /* Evaluate sysexec´s return code*/
+    /* Evaluate sysexecï¿½s return code*/
    %IF &sysrc. = 0 %THEN %DO;
       %_issueDebugMessage (&g_currentLogger., _copyDir: Sysrc : 0 -> SYSEXEC SUCCESSFUL);
    %END;

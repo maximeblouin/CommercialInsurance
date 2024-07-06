@@ -10,7 +10,7 @@
                The word false (case insensitive) also evaluates to false.
                All other character sequences evaluate to true.
 
-   \author     \$Author: klandwich $
+   \author     Klandwich
 
    \param   i_cond        	the condition to evaluate
    \param   i_desc         description of the assertion to be checked

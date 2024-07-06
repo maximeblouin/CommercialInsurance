@@ -5,7 +5,7 @@
    \brief      create a list of units under test for HTML report
 
    \version    \$Revision: 799 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-02-22 15:20:37 +0100 (Di., 22 Feb. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
@@ -181,7 +181,7 @@
          by MacName Firstline RecordType LastLine;
       run;
             
-      /*-- for every unit under test (see ‘target’ database ): 
+      /*-- for every unit under test (see ï¿½targetï¿½ database ): 
        call new macro _reporttcghtml.sas once in order to get a html 
        file showing test coverage for the given unit under test. For every call, 
        use the 000.tcg file as coverage analysis text file ---------------------*/
@@ -288,7 +288,7 @@
 
    PROC SQL NOPRINT;
       SELECT DISTINCT exa_auton 
-      INTO :l_pgmLibraries SEPARATED BY '§'
+      INTO :l_pgmLibraries SEPARATED BY 'ï¿½'
       FROM work._auton_report;
    QUIT;
 
@@ -318,9 +318,9 @@
    %end;
 
    options missing=" ";
-   %LET l_listCount=%sysfunc(countw(&l_pgmLibraries.,'§'));
+   %LET l_listCount=%sysfunc(countw(&l_pgmLibraries.,'ï¿½'));
    %do i = 1 %to &l_listCount.;
-      %LET l_pgmLib=%lowcase(%scan(&l_pgmLibraries,&i,§));
+      %LET l_pgmLib=%lowcase(%scan(&l_pgmLibraries,&i,ï¿½));
       %LET l_cAuton=;
       %IF (l_pgmLib ne .) %THEN %DO;
          %LET l_cAuton=%sysfunc (putn(&l_pgmLib.,z3.))_;

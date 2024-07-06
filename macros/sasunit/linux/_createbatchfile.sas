@@ -7,7 +7,7 @@
                This macro is called from os-independend macro _createbatchfiles.sas
 
    \version    \$Revision: 776 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-11 14:35:10 +0200 (Di., 11 Mai 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

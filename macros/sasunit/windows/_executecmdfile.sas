@@ -5,7 +5,7 @@
    \brief      execute an command file by operation system command
 
    \version    \$Revision: 752 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2020-10-08 09:35:43 +0200 (Do., 08 Okt. 2020) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

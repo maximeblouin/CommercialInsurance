@@ -6,7 +6,7 @@
 
 
    \version    \$Revision: 746 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2020-10-06 14:47:42 +0200 (Di., 06 Okt. 2020) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

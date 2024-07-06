@@ -5,7 +5,7 @@
    \brief      Initialize runtime environment (macro symbols and librefs / / filerefs)
 
    \version    \$Revision: 779 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-20 09:34:08 +0200 (Do., 20 Mai 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

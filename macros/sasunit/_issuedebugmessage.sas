@@ -4,9 +4,9 @@
 
    \brief      Issues an debug message to a logger
    
-   \version    \$Revision: 743 $
-   \author     \$Author: klandwich $
-   \date       \$Date: 2020-10-05 11:49:23 +0200 (Mo., 05 Okt. 2020) $
+   \version    Revision: 743
+   \author     Klandwich
+   \date       2020-10-05
    
    \param     loggername   Name of the logger to capture the message
    \param     message      Message to be captured by the logger

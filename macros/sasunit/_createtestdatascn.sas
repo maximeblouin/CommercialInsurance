@@ -5,7 +5,7 @@
    \brief      Creates test data base table scn.
 
    \version    \$Revision: 761 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2020-12-22 15:41:31 +0100 (Di., 22 Dez. 2020) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

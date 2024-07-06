@@ -5,7 +5,7 @@
    \brief      runs a program in a spawned process
 
    \version    \$Revision: 783 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-05-21 12:35:54 +0200 (Fr., 21 Mai 2021) $
 
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

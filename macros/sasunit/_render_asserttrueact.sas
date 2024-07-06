@@ -3,7 +3,7 @@
 
    \brief      renders the layout of the actual column for assertTrue
 
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \param   i_sourceColumn name of the column holding the value
    \param   o_html         Test report in HTML-format?
    \param   o_targetColumn name of the target column holding the ODS formatted value

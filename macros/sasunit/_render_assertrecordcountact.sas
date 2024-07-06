@@ -5,7 +5,7 @@
    \brief      renders the layout of the actual column for assertRecordCount
 
    \version    \$Revision: 764 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2021-04-12 11:55:08 +0200 (Mo., 12 Apr. 2021) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

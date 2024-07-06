@@ -13,7 +13,7 @@
                changed (last modification data as SAS datetime).
 
    \version    \$Revision: 737 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2020-03-18 11:10:56 +0100 (Mi., 18 MÃ¤rz 2020) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
@@ -81,7 +81,7 @@
          end;
          if ("&G_DATEFORMAT." ne "_NONE_") then do;
             dateformat   = "&G_DATEFORMAT.";
-            line         = tranwrd (line, "Mrz", "Mär");
+            line         = tranwrd (line, "Mrz", "Mï¿½r");
          end;
          d          = inputn (scan (line,1,' '), dateformat);
          tstring    = trim (scan (line,2,' '));

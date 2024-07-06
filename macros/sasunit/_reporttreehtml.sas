@@ -29,7 +29,7 @@
                        <each macro source file>
 
    \version    \$Revision: 803 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2022-02-23 14:48:59 +0100 (Mi., 23 Feb. 2022) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
@@ -538,7 +538,7 @@ RUN;
    RUN;
 %end;
 
-/*-- Lookahead für Level -----------------------------------------------------*/
+/*-- Lookahead fï¿½r Level -----------------------------------------------------*/
 DATA &d_tree. &d_la. (KEEP=lvl RENAME=(lvl=nextlvl));
    SET &d_tree1. &d_tree2. 
    %if (&o_pgmdoc.) %then %do;

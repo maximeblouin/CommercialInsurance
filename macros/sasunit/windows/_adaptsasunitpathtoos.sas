@@ -5,7 +5,7 @@
    \brief      macro function, that makes path contain only backslashes using translate function 
 
    \version    \$Revision: 737 $
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \date       \$Date: 2020-03-18 11:10:56 +0100 (Mi., 18 März 2020) $
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/

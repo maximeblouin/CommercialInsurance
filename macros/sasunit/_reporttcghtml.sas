@@ -8,9 +8,9 @@
                A html representation of a given macro source code file is generated, 
                showing which lines of code were executed during tests.
 
-   \version \$Revision: 743 $
-   \author  \$Author: klandwich $
-   \date    \$Date: 2020-10-05 11:49:23 +0200 (Mo., 05 Okt. 2020) $
+   \version Revision: 743
+   \author  Klandwich
+   \date    2020-10-05
    
    \sa         For further information please refer to https://sourceforge.net/p/sasunit/wiki/User%27s%20Guide/
                Here you can find the SASUnit documentation, release notes and license information.
@@ -296,7 +296,7 @@
       SET WORK.MCoverage;
       RowNumber = _N_;
       outputRow = trim(srcRowCopy);
-      outputRow = tranwrd (outputRow,'^{','°[');
+      outputRow = tranwrd (outputRow,'^{','ï¿½[');
       outputRow = tranwrd (outputRow,'}',']');
       %_render_dataColumn (i_sourceColumn=RowNumber
                           ,i_format=Z5.

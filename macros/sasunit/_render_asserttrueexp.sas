@@ -3,7 +3,7 @@
 
    \brief      renders the layout of the expected column for assertTrue
 
-   \author     \$Author: klandwich $
+   \author     Klandwich
    \author     Author: canczc
    \param   i_sourceColumn name of the column holding the value
    \param   o_html         Test report in HTML-format?
