@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    ANALYTICS
+    \ingroup    MACRO_ANALYTICS
     \brief      SAS macro for overall rate level (ORL) analysis.
     \details    This macro adds an 'orl_flag' variable to a dataset, indicating
                 whether to include or exclude certain records based on specific criteria.
@@ -11,9 +11,7 @@
     \param      o_dataset_name      Specifies the name of the output dataset (default=the input dataset name).
     \param      flag_variable_name  Specifies the name of the flag variable (default='orl_flag').
     \return     A dataset with an added orl_flag variable indicating whether to include (1) or exclude (0).
-*/
-
-/** \cond */
+*/ /** \cond */
 
 %macro add_orl_flag(
     i_dataset_name=_LAST_ /*Specifies the name of the dataset to process.*/,
