@@ -42,10 +42,12 @@
                     output;
                 end;
 
-                /* Calculate length for numeric variables (assuming 8 bytes for numeric values) */
+                /* Calculate length for numeric variables */
                 do i = 1 to dim(num_vars);
                     varname = vname(num_vars[i]);
-                    varlength = 8;
+                    /* Convert numeric to character and trim whitespace */
+                    var_as_char = strip(put(num_vars[i], best.));
+                    varlength = lengthn(var_as_char); /* Count digits */
                     output;
                 end;
 
