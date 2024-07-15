@@ -11,11 +11,23 @@ def read_sas_programs(directory):
             if file.endswith('.sas'):
                 file_path = os.path.join(root, file)
                 with open(file_path, 'r') as f:
-                    sas_contents[file_path] = f.read()
+                    content = f.read()
+                    content = preprocess_content(content)
+                    sas_contents[file_path] = content
     return sas_contents
 
+def preprocess_content(content):
+    lines = content.splitlines()
+    cleaned_lines = []
+    for line in lines:
+        cleaned_line = line.strip()  # Remove leading and trailing spaces
+        cleaned_line = cleaned_line.lstrip('\t')  # Remove leading tabs
+        if cleaned_line:  # Remove blank lines
+            cleaned_lines.append(cleaned_line.upper())  # Convert to uppercase
+    return ' '.join(cleaned_lines)
+
 def tokenize(text):
-    tokens = re.findall(r'\b\w+\b', text.lower())
+    tokens = re.findall(r'\b\w+\b', text)
     return tokens
 
 def vectorize(tokens, vocab):
