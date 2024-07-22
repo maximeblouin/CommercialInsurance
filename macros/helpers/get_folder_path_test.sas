@@ -23,7 +23,7 @@
 
 /* assert */
 %assertTrue(
-    i_cond = &folder_path EQ 'C:\path\to\your\file',
+    i_cond = &folder_path EQ 'C:\path\to\your',
     i_desc = %str(Check that path is extracted correctly));
 
 %assertPerformance(
