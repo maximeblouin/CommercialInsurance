@@ -29,7 +29,7 @@
 
     /* Read the text file into a data set */
     data _null_;
-        infile &i_input_file encoding=&i_encoding lrecl=32767 truncover;
+        infile &i_input_file lrecl=32767 truncover;
         file &i_output_file encoding=&i_encoding;
         input;
         _infile_ = tranwrd(_infile_, &i_find_string, &i_replace_string);
