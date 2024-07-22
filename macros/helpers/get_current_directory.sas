@@ -10,24 +10,16 @@
 */ /** \cond */
 %macro get_current_directory();
 
+    filename cwd '.';
+
     %local l_cwd;
-    %let l_cwd = ;
 
-    data _null_;
-        length cwd $ 250;
-
-        rc = filename('cwd', '.'); /*'.' refers to the current directory*/
-
-        if (rc = 0) then do;
-            call symputx('l_cwd', pathname('cwd'));
-        end;
-    run;
-
-    %if &l_cwd %then %do;
-        %put "ERROR: Unable to get current working directory.";
-    %end;
-    else %do;
+    %if %sysfunc(fileref(cwd)) %then %do;
+        %let l_cwd = %sysfunc(pathname(cwd, F)); /* 'F' specifies a search for a fileref. */
         &l_cwd
+    %end;
+    %else %do;
+        %put %sysfunc(sysmsg());
     %end;
 
 %mend get_current_directory;
