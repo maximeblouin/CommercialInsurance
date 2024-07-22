@@ -10,8 +10,10 @@
 */ /** \cond */
 %macro get_current_directory();
 
-    %local l_cwd;
+    %local l_cwd l_rc;
     %let l_cwd=cwd;
+
+    %let l_rc=%sysfunc(filename(l_cwd,"."));
 
     %sysfunc(pathname(cwd, F)); /* 'F' specifies a search for a fileref. */
 
