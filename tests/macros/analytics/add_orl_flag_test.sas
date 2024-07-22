@@ -1,15 +1,16 @@
 /**
     \file
-    \ingroup    MACROS_ANALYTICS_TEST
+    \ingroup    ANALYTICS_TEST
     \author     Maxime Blouin
     \date       07JUL2024
-*/
+*/ /** \cond */
 
-/** \cond */
+%initScenario(
+    i_desc=Unit tests for macro add_orl_flag);
 
-%initScenario(i_desc=Unit tests for macro add_orl_flag);
-
-%initTestCase(i_object=add_orl_flag, i_desc=Test addition of ORL flag for losses);
+%initTestCase(
+    i_object=add_orl_flag.sas,
+    i_desc=Test addition of ORL flag for losses);
 
 proc sql;
     create table work.loss_insurance_expected (
@@ -17,8 +18,7 @@ proc sql;
         catastrophe_flag char(1),
         province_code char(2),
         business_activity char(50),
-        orl_flag char(1)
-    );
+        orl_flag char(1));
 
     /* Insert data */
     insert into work.loss_insurance_expected (coverage_class, catastrophe_flag, province_code, business_activity, orl_flag)
@@ -36,8 +36,7 @@ proc sql;
         coverage_class char(50),
         catastrophe_flag char(1),
         province_code char(2),
-        business_activity char(50)
-    );
+        business_activity char(50));
 
     /* Insert data */
     insert into work.loss_insurance_actual (coverage_class, catastrophe_flag, province_code, business_activity)
@@ -54,25 +53,26 @@ quit;
 %add_orl_flag(
     i_dataset_name=loss_insurance_actual,
     i_claim_data=1,
-    o_dataset_name=loss_insurance_actual
-);
+    o_dataset_name=loss_insurance_actual);
 
 %endTestCall();
 
 %assertColumns(
     i_expected=work.loss_insurance_expected,
     i_actual=work.loss_insurance_actual,
-    i_desc=Check ORL flag for losses
-)
+    i_desc=Check ORL flag for losses);
 
-%assertPerformance(i_expected=1);
+%assertPerformance(
+    i_expected=1);
 
-%assertLog(i_errors=0, i_warnings=0);
+%assertLog(
+    i_errors=0,
+    i_warnings=0);
 
 %endTestCase();
 
 
-%initTestCase(i_object=add_orl_flag, i_desc=Test addition of ORL flag for premiums);
+%initTestCase(i_object=add_orl_flag.sas, i_desc=Test addition of ORL flag for premiums);
 
 proc sql;
     create table work.prem_insurance_expected (
@@ -92,8 +92,6 @@ proc sql;
     values ('Manual Form',                  'ON', 'Snow Removal',           '0')
     values ('N/D',                          'QC', 'N/D',                    '1');
 quit;
-
-
 
 
 proc sql;
@@ -118,23 +116,23 @@ quit;
 %add_orl_flag(
     i_dataset_name=prem_insurance_actual,
     i_claim_data=0,
-    o_dataset_name=prem_insurance_actual
-);
+    o_dataset_name=prem_insurance_actual);
 
 %endTestCall();
 
 %assertColumns(
     i_expected=work.prem_insurance_expected,
     i_actual=work.prem_insurance_actual,
-    i_desc=Check ORL flag for premiums
-)
+    i_desc=Check ORL flag for premiums);
 
-%assertPerformance(i_expected=1);
+%assertPerformance(
+    i_expected=1);
 
-%assertLog(i_errors=0, i_warnings=0);
+%assertLog(
+    i_errors=0,
+    i_warnings=0);
 
 %endTestCase();
 
 %endScenario();
-
 /** \endcond */

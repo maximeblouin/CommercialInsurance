@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS_TEST
+    \ingroup    HELPERS_TEST
     \brief      Tests for get_vars.sas
     \details    Example for a test scenario with the following features:
                 - check value of macro symbol with assertEquals.sas
@@ -9,10 +9,7 @@
                 - check for special cases
     \author     Maxime Blouin
     \date       14JUL2022
-*/
-
-/** \cond */
-
+*/ /** \cond */
 %initScenario(i_desc=Tests for get_vars.sas);
 
 /*-- simple example with sashelp.class ---------------------------------------*/
@@ -170,5 +167,4 @@ proc delete data=work.test;
 run;
 
 %endScenario();
-
 /** \endcond */

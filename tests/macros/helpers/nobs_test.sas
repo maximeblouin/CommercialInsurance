@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS_TEST
+    \ingroup    HELPERS_TEST
 
     \brief      Tests for nobs.sas
 
@@ -10,9 +10,7 @@
 
     \author     Maxime Blouin
     \date       14JUL2022
-*/
-
-/** \cond */
+*/ /** \cond */
 
 %initScenario(i_desc=Tests for nobs.sas);
 
@@ -116,5 +114,4 @@ proc datasets lib=work memtype=DATA nolist;
 quit;
 
 %endScenario();
-
 /** \endcond */

@@ -1,15 +1,15 @@
 /**
     \file
-    \ingroup    MACROS_ANALYTICS_TEST
+    \ingroup    ANALYTICS_TEST
     \author     Maxime Blouin
     \date       07JUL2024
-*/
+*/ /** \cond */
+%initScenario(
+    i_desc=Unit tests for macro count_claims);
 
-/** \cond */
-
-%initScenario(i_desc=Unit tests for macro count_claims);
-
-%initTestCase(i_object=count_claims, i_desc=Test claims counting);
+%initTestCase(
+    i_object=count_claims.sas,
+    i_desc=Test claims counting);
 
 /* Generate test data */
 data claim_count_expected;
@@ -45,15 +45,16 @@ run;
 %assertColumns(
     i_expected=work.claim_count_expected,
     i_actual=work.claim_count_actual,
-    i_desc=Check claims counter
-)
+    i_desc=Check claims counter);
 
-%assertPerformance(i_expected=1);
+%assertPerformance(
+    i_expected=1);
 
-%assertLog(i_errors=0, i_warnings=0);
+%assertLog(
+    i_errors=0,
+    i_warnings=0);
 
 %endTestCase();
 
 %endScenario();
-
 /** \endcond */
