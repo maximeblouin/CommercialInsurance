@@ -17,13 +17,14 @@
 %macro get_folder_path(
     file_path /* the file path */
 );
-    %local i_folder_path i_last_backslash_position;
+    %local i_last_backslash_position i_length i_folder_path;
 
     /* Find the position of the last backslash (\) */
-    %let i_last_backslash_position = %sysfunc(countc(&file_path, '\')); /* Count occurrences */
+    %let i_last_backslash_position = %sysfunc(countc(&file_path, '\'));
 
     /* Extract the substring up to the last backslash */
-    %let i_folder_path = %sysfunc(substrn(&file_path, 1, %eval(%length(&file_path) - &i_last_backslash_position)));
+    %let i_length=%eval(%length(&file_path) - &i_last_backslash_position);
+    %let i_folder_path = %sysfunc(substrn(&file_path, 1, &i_length));
 
     /* Return the folder path */
     &i_folder_path
