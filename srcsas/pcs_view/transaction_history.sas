@@ -17,10 +17,10 @@ proc sql;
     select
         policynumber as policynumber label="Policy #",
         coalescec(txsubtype, txtype) as type label="Type",
-        txdate as transaction_date label="Transaction Date" format=yymmdd10.,
-        txeffectivedate as effective_date label="Effective Date" format=yymmdd10.,
+        datepart(txdate) as transaction_date label="Transaction Date" format=yymmdds10.,
+        datepart(txeffectivedate) as effective_date label="Effective Date" format=yymmdds10.,
         revisionno as transaction_no label="#",
-        coalescec(txreason, txreasontext) as reason label="Reason",
+        coalescec(txreason, txreasontext) as reason label="Reason",J
         case
             when stateprovcd = 'QC' then 1.09 * mnt_prim_souscr
             else mnt_prim_souscr
@@ -42,14 +42,13 @@ proc sql;
             info_policy.premiumamt_policy,
             info_policy.createdby,
             info_policy.authorizedperson,
+            info_policy.stateprovcd,
             prime_souscrite.txdate,
             prime_souscrite.txeffectivedate,
-            prime_souscrite.stateprovcd,
             prime_souscrite.mnt_prim_souscr
         from trvap1q.trv_dacces_info_policy info_policy
         left join (
             select
-                nk_policy,
                 policynumber,
                 no_seq_trans,
                 stateprovcd,
@@ -59,7 +58,8 @@ proc sql;
             from trvap1q.trv_dacces_prime_souscrite
             group by nk_policy
         ) prime_souscrite
-        on info_policy.nk_policy = prime_souscrite.nk_policy
+        on info_policy.policynumber = prime_souscrite.policynumber
+        and info_policy.transaction_no = prime_souscrite.revisionno
         order by
             info_policy.policynumber,
             info_policy.revisionno desc
