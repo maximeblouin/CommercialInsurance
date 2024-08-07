@@ -36,7 +36,7 @@ proc sql;
         createdby as performer label="Performer",
         authorizedperson as requestor label="Requestor",
         mnt_prim_souscr as transaction_premium_no_tax label="Transaction Premium (No Tax)" format=dollar16.2,
-        premiumamt_policy as ending_premium_no_tax label="Ending Premium (No Tax)" format=dollar16.2C
+        premiumamt_policy as ending_premium_no_tax label="Ending Premium (No Tax)" format=dollar16.2
     from connection to oracle(
         select
             info_policy.policynumber,
@@ -85,10 +85,10 @@ proc summary nway missing data=pcs_view.transaction_history;
     class policynumber type transaction_date transaction_no reason
         ending_premium performer requestor ending_premium_no_tax;
     var transaction_premium transaction_premium_no_tax effective_date;
-    output out=pcs_view.transaction_history_sum
+    output out=pcs_view.transaction_history (drop=_type_ _freq_)
         sum(transaction_premium)=transaction_premium
         sum(transaction_premium_no_tax)=transaction_premium_no_tax
-        max(effective_date)=effective_date;
+        min(effective_date)=effective_date;
 run;
 
 data pcs_view.transaction_history (
@@ -97,5 +97,9 @@ data pcs_view.transaction_history (
         transaction_premium ending_premium performer requestor
         transaction_premium_no_tax ending_premium_no_tax;
     set pcs_view.transaction_history;
+run;
+
+proc sort data=pcs_view.transaction_history;
+    by policynumber descending transaction_no;
 run;
 /** \endcond */
