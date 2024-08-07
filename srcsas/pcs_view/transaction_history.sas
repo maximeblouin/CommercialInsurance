@@ -8,6 +8,10 @@
     \todo Check the tax calculation for Quebec policies and other provinces.
     \todo Join the full name for the performer and the requestor.
     \todo Ensure the Type and Reason format is correct.
+    \todo Better formatting for Type.
+    \todo Better formatting for Reason (format cancellation Code (d3, ...))
+    \todo Le requestor n'est pas toujours rempli dans PCS, donc ce n'est pas le champ authorizedperson
+    \todo si Performer eq ipbsys alors IPB System user
 */ /** \cond */
 proc sql;
 
@@ -20,13 +24,13 @@ proc sql;
         datepart(txdate) as transaction_date label="Transaction Date" format=yymmdds10.,
         datepart(txeffectivedate) as effective_date label="Effective Date" format=yymmdds10.,
         revisionno as transaction_no label="#",
-        coalescec(txreason, txreasontext) as reason label="Reason",J
+        coalescec(txreason, txreasontext) as reason label="Reason",
         case
-            when stateprovcd = 'QC' then 1.09 * mnt_prim_souscr
+            when riskstatecd = 'QC' then 1.09 * mnt_prim_souscr
             else mnt_prim_souscr
         end as transaction_premium label="Transaction Premium" format=dollar16.2,
         case
-            when stateprovcd = 'QC' then 1.09 * premiumamt_policy
+            when riskstatecd = 'QC' then 1.09 * premiumamt_policy
             else premiumamt_policy
         end as ending_premium label="Ending Premium" format=dollar16.2,
         createdby as performer label="Performer",
@@ -42,7 +46,7 @@ proc sql;
             info_policy.premiumamt_policy,
             info_policy.createdby,
             info_policy.authorizedperson,
-            info_policy.stateprovcd,
+            info_policy.riskstatecd,
             prime_souscrite.txdate,
             prime_souscrite.txeffectivedate,
             prime_souscrite.mnt_prim_souscr
@@ -51,15 +55,20 @@ proc sql;
             select
                 policynumber,
                 no_seq_trans,
-                stateprovcd,
+                riskstatecd,
                 txdate,
                 txeffectivedate,
                 sum(mnt_prim_souscr) as mnt_prim_souscr
             from trvap1q.trv_dacces_prime_souscrite
-            group by nk_policy
+            group by
+                policynumber,
+                no_seq_trans,
+                riskstatecd,
+                txdate,
+                txeffectivedate
         ) prime_souscrite
         on info_policy.policynumber = prime_souscrite.policynumber
-        and info_policy.transaction_no = prime_souscrite.revisionno
+        and info_policy.revisionno = prime_souscrite.no_seq_trans
         order by
             info_policy.policynumber,
             info_policy.revisionno desc
