@@ -34,7 +34,9 @@ proc sql;
             else premiumamt_policy
         end as ending_premium label="Ending Premium" format=dollar16.2,
         createdby as performer label="Performer",
-        authorizedperson as requestor label="Requestor"
+        authorizedperson as requestor label="Requestor",
+        mnt_prim_souscr as transaction_premium_no_tax label="Transaction Premium (No Tax)" format=dollar16.2,
+        premiumamt_policy as ending_premium_no_tax label="Ending Premium (No Tax)" format=dollar16.2C
     from connection to oracle(
         select
             info_policy.policynumber,
@@ -76,4 +78,24 @@ proc sql;
 
     disconnect from oracle;
 quit;
+
+/*Correctif pour les transactions dupliqués*/
+/* compute the sum of transaction_premium and transaction_premium_no_tax, the max of effective_date*/
+proc summary nway missing data=pcs_view.transaction_history;
+    class policynumber type transaction_date transaction_no reason
+        ending_premium performer requestor ending_premium_no_tax;
+    var transaction_premium transaction_premium_no_tax effective_date;
+    output out=pcs_view.transaction_history_sum
+        sum(transaction_premium)=transaction_premium
+        sum(transaction_premium_no_tax)=transaction_premium_no_tax
+        max(effective_date)=effective_date;
+run;
+
+data pcs_view.transaction_history (
+    label="PCS Transaction History");
+    retain policynumber type transaction_date effective_date transaction_no reason
+        transaction_premium ending_premium performer requestor
+        transaction_premium_no_tax ending_premium_no_tax;
+    set pcs_view.transaction_history;
+run;
 /** \endcond */
