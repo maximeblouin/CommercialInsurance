@@ -46,11 +46,11 @@
     %let l_sca_filename = &o_sca_folder.\%sysfunc(scan(%sysfunc(scan(&i_sas_job, -1, %str(\))), 1, .))_&l_runtime..txt;
 
     /* Route the SAS log to an external file. */
-    filename log "&l_log_filename";
+    filename log_file "&l_log_filename";
 
     %put INFO: Log destination: &l_log_filename;
 
-    proc printto new log=log;
+    proc printto new log=log_file_file;
     run;
 
     /* Turn on various extra options if verbose. */
@@ -63,9 +63,9 @@
             nonumber pagesize=MAX linesize=MAX
             fullstimer
             msglevel=I
-            mcoverage mexecnote
+            /*mcoverage mexecnote
             mprintnest mlogicnest
-            source source2;
+            source source2*/;
 
         /* Print macro variables to the log for debugging. */
         %put _ALL_;
@@ -92,9 +92,9 @@
     proc printto;
     run;
 
-    filename log clear;
+    filename log_file clear;
 
-    %put INFO: SAS Logging has been reset to the default location.
+    %put INFO: SAS Logging has been reset to the default location.;
 
 %mend run_sas_job;
 /** \endcond */
