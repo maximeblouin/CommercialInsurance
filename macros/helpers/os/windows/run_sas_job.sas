@@ -255,6 +255,12 @@
             file print;
             put line;
         run;
+
+        %delete_dataset(i_library=work, i_table=flow);
+        %delete_dataset(i_library=work, i_table=procnames);
+        %delete_dataset(i_library=work, i_table=_stats);
+        %delete_dataset(i_library=work, i_table=scaproc);
+        %delete_dataset(i_library=work, i_table=graphviz);
     %end;
 
     /* Reset the log destination. */
