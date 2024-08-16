@@ -104,7 +104,7 @@
         /*read in the info and parse into a SAS table*/
         filename scaproc "&l_sca_filename";
 
-        data scaproc;
+        data work.sca_scaproc;
             length word1-word6 $ 46;
             retain step 1;
             infile scaproc;
@@ -132,7 +132,7 @@
 
         /*merge the data into one record for each step*/
         proc sql noprint;
-            create table flow as
+            create table work.sca_flow as
             select
                 coalesce(a.step,b.step,c.step) as step,
                 a.procname,
@@ -141,25 +141,25 @@
                 coalesce(scan(b.in,2,'~'),scan(c.in,2,'~')) as in,
                 coalesce(scan(b.out,2,'~'),scan(c.out,2,'~')) as out,
                 d.elapsed
-            from scaproc(where=(procname>'')) as a
-            full join scaproc(where=(in>'')) as b
+            from work.sca_scaproc(where=(procname>'')) as a
+            full join work.sca_scaproc(where=(in>'')) as b
                 on a.step=b.step
-            full join scaproc(where=(out>'')) as c
+            full join work.sca_scaproc(where=(out>'')) as c
                 on a.step=c.step
-            left join scaproc(where=(elapsed>0)) as d
+            left join work.sca_scaproc(where=(elapsed>0)) as d
                 on a.step=d.step
             order by calculated step;
 
-            create table procnames as
+            create table work.sca_procnames as
             select distinct procname
-            from flow
+            from work.sca_flow
             where procname is not missing and (missing(in) or missing(out)) ;
         quit ;
 
         /*create percentiles for use in making diagram*/
-        proc univariate data=work.flow noprint;
+        proc univariate data=work.sca_flow noprint;
             var elapsed;
-            output out = _stats
+            output out = work.sca_stats
             pctlpts = 50 60 70 80 90 95 99
             pctlpre = pct;
         run;
@@ -167,7 +167,7 @@
         /* Put the percentile into macro variables */
         data _null_;
             length varname $32;
-            dsid=open("_stats");
+            dsid=open("work.sca_stats");
             call set(dsid);
             rc=fetch(dsid);
             do i=1 to attrn(dsid, 'nvars');
@@ -180,7 +180,7 @@
         run;
 
         /* Create .DOT directives to make a diagram */
-        data work.graphviz(keep=line);
+        data work.sca_graphviz (keep=line);
             length
                 line $ 140
                 p $ 32
@@ -202,7 +202,7 @@
                 line='node [shape=box color=lightblue style=filled]';
                 output;
 
-                dsid=open('procnames');
+                dsid=open('work.sca_procnames');
                 do while(fetch(dsid)=0);
                     p=getvarc(dsid,1);
                     line=quote(strip(p))||'[shape=ellipse color=lightgreen]';
@@ -212,7 +212,7 @@
                 dsid=close(dsid);
             end;
 
-            set flow end=end;
+            set work.sca_flow end=end;
 
             in=quote(strip(in));
             out=quote(strip(out));
@@ -249,18 +249,18 @@
         run;
 
         data _null_;
-            set work.graphviz;
+            set work.sca_graphviz;
             file "&l_graphviz_filename.";
             put line;
             file print;
             put line;
         run;
 
-        %delete_dataset(i_library=work, i_table=flow);
-        %delete_dataset(i_library=work, i_table=procnames);
-        %delete_dataset(i_library=work, i_table=_stats);
-        %delete_dataset(i_library=work, i_table=scaproc);
-        %delete_dataset(i_library=work, i_table=graphviz);
+        %delete_dataset(i_library=work, i_table=sca_flow);
+        %delete_dataset(i_library=work, i_table=sca_procnames);
+        %delete_dataset(i_library=work, i_table=sca_stats);
+        %delete_dataset(i_library=work, i_table=sca_scaproc);
+        %delete_dataset(i_library=work, i_table=sca_graphviz);
     %end;
 
     /* Reset the log destination. */
