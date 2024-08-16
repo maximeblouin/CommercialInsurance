@@ -14,20 +14,20 @@
     \sa         https://support.sas.com/resources/papers/proceedings17/1104-2017.pdf
     \param      i_sas_job     (char) SAS job to run
     \param      i_verbose     (char) Verbose mode (YES/NO default: NO)
+    \param      o_graphviz_folder (char) Specifies the graphviz output directory (optional)
     \param      o_log_folder  (char) Specifies the SAS log output directory (optional)
     \param      o_sca_folder  (char) Specifies the SAS Code Analyzer output directory (optional)
-    \param      o_graphiz_folder (char) Specifies the Graphiz output directory (optional)
 */ /** \cond */
 %macro run_sas_job(
     i_sas_job=,
     i_verbose=NO,
-    o_graphiz_folder=
+    o_graphviz_folder=,
     o_log_folder=,
     o_sca_folder=);
 
     /* Remove quotes from inputs. */
     %let i_sas_job = %sysfunc(dequote(&i_sas_job));
-    %let o_graphiz_folder = %sysfunc(dequote(&o_graphiz_folder));
+    %let o_graphviz_folder = %sysfunc(dequote(&o_graphviz_folder));
     %let o_log_folder = %sysfunc(dequote(&o_log_folder));
     %let o_sca_folder = %sysfunc(dequote(&o_sca_folder));
 
@@ -44,12 +44,12 @@
     %end;
 
     /* Declare local variables. */
-    %local l_log_filename l_sca_filename l_runtime l_graphiz_filename;
+    %local l_log_filename l_sca_filename l_runtime l_graphviz_filename;
     %let l_runtime = %sysfunc(datetime(), B8601DT.); /* ISO 8601 datetime format YYYYMMDDTHHMMSS */
-    %let l_graphiz_filename = &o_graphiz_folder.\%sysfunc(scan(%sysfunc(scan(&i_sas_job, -1, %str(\))), 1, .))_&l_runtime..txt;
+    %let l_graphviz_filename = &o_graphviz_folder.\%sysfunc(scan(%sysfunc(scan(&i_sas_job, -1, %str(\))), 1, .))_&l_runtime..dot;
     %let l_log_filename = &o_log_folder.\%sysfunc(scan(%sysfunc(scan(&i_sas_job, -1, %str(\))), 1, .))_&l_runtime..log;
     %let l_sca_filename = &o_sca_folder.\%sysfunc(scan(%sysfunc(scan(&i_sas_job, -1, %str(\))), 1, .))_&l_runtime..txt;
-    
+
     /* Route the SAS log to an external file. */
     filename log_file "&l_log_filename";
 
@@ -96,13 +96,13 @@
 
         /*list the directory to see the file created*/
         data _null_;
-            infile "&scaproc_dir./&scaproc_file";
+            infile "&l_sca_filename";
             input;
             put _infile_;
         run;
 
         /*read in the info and parse into a SAS table*/
-        filename scaproc "&scaproc_dir./&scaproc_file";
+        filename scaproc "&l_sca_filename";
 
         data scaproc;
             length word1-word6 $ 46;
@@ -249,8 +249,8 @@
         run;
 
         data _null_;
-            set work.graphiz;
-            file "&l_graphiz_filename.";
+            set work.graphviz;
+            file "&l_graphviz_filename.";
             put line;
             file print;
             put line;
@@ -267,46 +267,3 @@
 
 %mend run_sas_job;
 /** \endcond */
-/******************************************************************************
-* Program: SCAPROC_ANALYSE *
-* *
-* Author: Philip Mason *
-* *
-* Date Created: 01/08/2016 *
-* *
-* Description: Analyse output from PROC SCAPROC, which has previously *
-* been written to a text file. *
-* After running this ... *
-* Now there are some manual steps. These could be automated, *
-* but would need to install some software or use the Stored *
-* Process Web App. *
-* 1 - Copy the lines from the table just created (GRAPHVIZ). *
-* View the table in EG. *
-14
-* Click on column, to select all values in it *
-* Then control-C. *
-* 2 - Go to http://webgraphviz.com/ . *
-* 3 - Paste the lines into the Text Area. *
-* 4 - Press "Generate Graph!" button. *
-* *
-* Parameters: scaproc_dir - directory where the proc scaproc output is *
-* scaproc_file - file name of the proc scaproc output *
-* *
-* Data Sources: %sysfunc(pathname(WORK))/scaproc.txt *
-* *
-* Data Output: WORK.GRAPHVIZ *
-* *
-* Auxiliary Files: n/a *
-* *
-*-----------------------------------------------------------------------------*
-* Modification History *
-* Date By Details *
-* 01/08/2016 PM Original Coding *
-******************************************************************************/
-*******************************************************************************
-*** You need to have already produced a file to analyse by using the ***
-*** eanbegin and eanend macros put around the code you want to analyse. ***
-*******************************************************************************;
-%macro scaproc_analyse(scaproc_file=scaproc.txt) ;
-
-%mend scaproc_analyse ;
