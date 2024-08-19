@@ -86,6 +86,14 @@
     /* Run the program. */
     %include "&i_sas_job";
 
+    /* Reset the log destination. */
+    proc printto;
+    run;
+
+    filename log_file clear;
+
+    %put INFO: SAS Logging has been reset to the default location.;
+
     /* Write SCAPROC output. */
     %if %sysfunc(fileexist(&o_sca_folder)) %then %do;
         proc scaproc;
@@ -262,14 +270,6 @@
         %delete_dataset(i_library=work, i_table=sca_scaproc);
         %delete_dataset(i_library=work, i_table=sca_graphviz);
     %end;
-
-    /* Reset the log destination. */
-    proc printto;
-    run;
-
-    filename log_file clear;
-
-    %put INFO: SAS Logging has been reset to the default location.;
 
 %mend run_sas_job;
 /** \endcond */
