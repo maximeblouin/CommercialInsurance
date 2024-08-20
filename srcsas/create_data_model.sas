@@ -6,6 +6,7 @@
     \date       04APR2024
     \remark     Tables created:
                 - fact.AutoInsurancePolicy
+                - fact.Catastrophe
                 - fact.ClaimInformation
                 - fact.EarnedPremium
                 - fact.InsurancePolicy
@@ -13,6 +14,8 @@
                 - fact.LossCatastrophe
                 - fact.LossRatio
                 - fact.PolicyHolder
+                - fact.PropertyInsurancePolicy
+                - fact.OverallRateLevel
 */ /** \cond */
 proc sql;
     create table fact.AutoInsurancePolicy (
