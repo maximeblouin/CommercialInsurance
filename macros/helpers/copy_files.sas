@@ -1,5 +1,5 @@
 /**
-    \file
+    \file       copy_files.sas
     \ingroup    MACROS_HELPERS
     \brief      Copy files from a directory to another directory
     \detail     Copy files from a directory to another directory using regular expression pattern to match files
@@ -51,28 +51,10 @@
 
         /* Check if the file matches the regular expression pattern */
         %if &prx_match. > 0 %then %do;
-            /* Define the source file */
-            %let rc = %sysfunc(filename(fsrc, "&i_src_dir/&file"));
-
-            /* Define the destination file */
-            %let rc = %sysfunc(filename(fdest, "&o_dest_dir/&file"));
-
-            /* Copy the file to the destination directory */
-            %let rc = %sysfunc(fcopy(&fsrc, &fdest));
-
-            /* Check if the file was copied successfully */
-            %if &rc eq 0 %then %do;
-                %put INFO: File &file copied successfully;
-            %end;
-            %else %do;
-                %put ERROR: Unable to copy file &file;
-            %end;
-
-            /* Close the source file */
-            %let rc = %sysfunc(filename(fsrc));
-
-            /* Close the destination file */
-            %let rc = %sysfunc(filename(fdest));
+            %copy_file(
+                i_src_file = &i_src_dir./&file,
+                o_dest_file = &o_dest_dir./&file
+            );
         %end;
     %end;
 
