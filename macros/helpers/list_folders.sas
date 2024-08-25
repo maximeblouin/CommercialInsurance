@@ -5,7 +5,7 @@
     \details    Example: Execute the macro in a libname statement to create
                 a library with the folders matching the pattern.:
                 >> libname demo (
-                >>      %list_gdg_paths(
+                >>      %list_folders(
                 >>          i_dir=&_sasprod.fichiers\actu\a11\s999,
                 >>          i_pattern=^base_prmauto\[.*V00]$),
                 >>          i_nb_path=7));
@@ -16,11 +16,11 @@
     \param      i_nb_path number of folders to return
     \remark     Generation Data Group (GDG)
     \remark     The pattern is a regular expression
-    \remark     The folders are returned in reverse order
+    \remark     The folders are returned in reverse order (To prioritize the most recent folders)
     \remark     The folders are returned as a list of strings separated by a blank space (e.g. "folder1" "folder2")
     \return     list of folders matching the pattern in the specified directory
 */ /** \cond */
-%macro list_gdg_paths(
+%macro list_folders(
     i_dir /* directory to search for folders */,
     i_pattern /* pattern to match folders */,
     i_nb_path /* number of folders to return */);
@@ -55,6 +55,5 @@
 
     %let rc = %sysfunc(dclose(&did));
     %let rc = %sysfunc(filename(filrf));
-    %let rc = %sysfunc(prxfree(&regex_id)); /* Free the regex pattern */
-%mend list_gdg_paths;
+%mend list_folders;
 /** \endcond */
