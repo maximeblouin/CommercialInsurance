@@ -58,7 +58,7 @@
             %let rc = %sysfunc(filename(fdest, "&o_dest_dir/&file"));
 
             /* Copy the file to the destination directory */
-            %let rc = %sysfunc(fcopy(src_file, dest_file));
+            %let rc = %sysfunc(fcopy(&fsrc, &fdest));
 
             /* Check if the file was copied successfully */
             %if &rc eq 0 %then %do;
