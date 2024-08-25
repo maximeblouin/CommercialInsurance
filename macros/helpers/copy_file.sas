@@ -16,13 +16,13 @@
 
     %let recfm = d;
     /* Define recfm for Excel files */
-    %if %index(&i_src_file, .xlsx) %then %let recfm = n; /*binary format*/
+    %if %index(%lowcase(&i_src_file), .xlsx) %then %let recfm = n; /*binary format*/
 
     /* Define recfm for text files */
-    %else %if %index(&i_src_file, .txt) %then %let recfm = v;
+    %else %if %index(%lowcase(&i_src_file), .txt) %then %let recfm = v; /*variable format*/
 
     /* Define recfm for CSV files */
-    %else %if %index(&i_src_file, .csv) %then %let recfm = v;
+    %else %if %index(%lowcase(&i_src_file), .csv) %then %let recfm = v;
 
     /* Define the source file */
     filename fsrc "&i_src_file" recfm=&recfm.;
