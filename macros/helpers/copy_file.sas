@@ -24,6 +24,9 @@
     /* Define recfm for CSV files */
     %else %if %index(%lowcase(&i_src_file), .csv) %then %let recfm = v;
 
+    /* Define recfm for sas7bdat files */
+    %else %if %index(%lowcase(&i_src_file), .sas7bdat) %then %let recfm = f;
+
     /* Define the source file */
     filename fsrc "&i_src_file" recfm=&recfm.;
 
