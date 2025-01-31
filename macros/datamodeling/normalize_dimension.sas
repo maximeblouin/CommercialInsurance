@@ -12,7 +12,6 @@
                 - Dimension Table Creation
                 - Fact Table Normalization
 
-    \param      i_libname The library where the data model datasets are stored
     \param      i_original_dsn The input dataset to normalize
     \param      i_primary_keys The primary key of the dimension
     \param      i_attributes The attributes in the i_original_dsn to normalize
@@ -22,7 +21,6 @@
 
     \remark     Here's an example usage of the %normalize_dimension macro:
                 %normalize_dimension(
-                    i_libname=model,
                     i_original_dsn=FactTransactions,
                     i_primary_keys=PolicyNumber RenewalCycle,
                     i_attributes=PolicyNumber RenewalCycle PolicyType
@@ -41,7 +39,6 @@
 */ /** \cond */
 
 %macro normalize_dimension(
-    i_libname=,
     i_original_dsn=,
     i_primary_keys=,
     i_attributes=,
@@ -51,8 +48,7 @@
 
     /* Section: Input Parameters Validatation */
     /* Ensure all parameters are provided. */
-    %if %length(&i_libname) eq 0
-        or %length(&i_original_dsn) eq 0
+    %if %length(&i_original_dsn) eq 0
         or %length(&i_primary_keys) eq 0
         or %length(&i_attributes) eq 0
         or %length(&o_fact_dataset) eq 0
@@ -63,31 +59,31 @@
     %end;
 
     /* Check that `i_primary_keys` are valid column names in `i_original_dsn`.*/
-    %let dsid=%sysfunc(open(&i_libname..&i_original_dsn, i));
+    %let dsid=%sysfunc(open(&i_original_dsn, i));
     %do i = 1 %to %sysfunc(countw(&i_primary_keys));
         %let l_col = %scan(&i_primary_keys, &i);
         %let l_dsncol = %sysfunc(varnum(&dsid, &l_col));
         %if &l_dsncol eq 0 %then %do;
-            %put ERROR: Column &l_col not found in &i_libname..&i_original_dsn;
+            %put ERROR: Column &l_col not found in &i_original_dsn;
         %end;
     %end;
     %let rc=%sysfunc(close(&dsid));
 
     /* Check that `i_attributes` are valid column names in `i_original_dsn`.*/
-    %let dsid=%sysfunc(open(&i_libname..&i_original_dsn, i));
+    %let dsid=%sysfunc(open(&i_original_dsn, i));
     %do i = 1 %to %sysfunc(countw(&i_attributes));
         %let l_col = %scan(&i_attributes, &i);
         %let l_dsncol = %sysfunc(varnum(&dsid, &l_col));
         %if &l_dsncol eq 0 %then %do;
-            %put ERROR: Column &l_col not found in &i_libname..&i_original_dsn;
+            %put ERROR: Column &l_col not found in &i_original_dsn;
         %end;
     %end;
     %let rc=%sysfunc(close(&dsid));
 
     /* Section: Dimension Table Creation */
-    proc sort data=&i_libname..&i_original_dsn(
+    proc sort data=&i_original_dsn(
             keep=&i_primary_keys &i_attributes)
-              out=&i_libname..&o_dim_dataset nodupkey;
+              out=&o_dim_dataset nodupkey;
         by &i_primary_keys &i_attributes;
     run;
 
@@ -100,20 +96,20 @@
         select count(*) into :l_error
         from (
             select &l_sql_primary_keys, count(*) as count
-            from &i_libname..&o_dim_dataset
+            from &o_dim_dataset
             group by &l_sql_primary_keys
             having count(*) > 1);
     quit;
 
     /* Log warning if primary keys are not unique */
     %if &l_error > 0 %then %do;
-        %put WARNING: Primary keys are not unique in &i_libname..&o_dim_dataset;
+        %put WARNING: Primary keys are not unique in &o_dim_dataset;
     %end;
 
     /* Assign a Unique Key for the Dimension Table */
-    data &i_libname..&o_dim_dataset;
+    data &o_dim_dataset;
         retain &o_foreign_key;
-        set &i_libname..&o_dim_dataset;
+        set &o_dim_dataset;
 
         attrib &o_foreign_key.
             length=8 format=best12. informat=best12.
@@ -137,14 +133,14 @@
 
 
     /* Join back with the Fact Table using HASH OBJECT */
-    data &i_libname..&o_fact_dataset;
+    data &o_fact_dataset;
         if _n_ = 1 then do;
-            declare hash dim(dataset:"&i_libname..&o_dim_dataset");
+            declare hash dim(dataset:"&o_dim_dataset");
             dim.defineKey(&l_defineKeys);
             dim.defineData("&o_foreign_key.");
             dim.defineDone();
         end;
-        set &i_libname..&i_original_dsn;
+        set &i_original_dsn;
 
         attrib &o_foreign_key.
             length=8 format=best12. informat=best12.
@@ -163,18 +159,18 @@
     /* Check that all Dimension IDs are assigned */
     proc sql noprint;
         select count(*) into :l_error
-        from &i_libname..&o_fact_dataset
+        from &o_fact_dataset
         where &o_foreign_key. is missing;
     quit;
 
     /* Log warning if foreign keys are not assigned */
     %if &l_error > 0 %then %do;
-        %put WARNING: Foreign keys are not assigned in &i_libname..&o_fact_dataset;
+        %put WARNING: Foreign keys are not assigned in &o_fact_dataset;
     %end;
 
     /* Log Normalized Tables */
-    %put Normalized Fact Table: &i_libname..&o_fact_dataset;
-    %put Normalized Dimension Table: &i_libname..&o_dim_dataset;
+    %put Normalized Fact Table: &o_fact_dataset;
+    %put Normalized Dimension Table: &o_dim_dataset;
 
 %mend normalize_dimension;
 

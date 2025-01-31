@@ -40,14 +40,13 @@
     quit;
 
     %normalize_dimension(
-        i_libname=test,
-        i_original_dsn=FactTransactions1,
+        i_original_dsn=test.FactTransactions1,
         i_primary_keys=PolicyNumber RenewalCycle,
         i_attributes=PolicyNumber RenewalCycle PolicyType
             PolicyStatus PolicyStartDate PolicyEndDate,
         o_fact_dataset=FactTransactions1,
         o_foreign_key=PolicyID,
-        o_dim_dataset=DimPolicy);
+        o_dim_dataset=test.DimPolicy);
 
     /* Validate Dimension Table */
     proc sql;
