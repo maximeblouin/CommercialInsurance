@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Replace old_string by new_string in a text file
     \author     Maxime Blouin
     \date       22JUL2024

@@ -12,12 +12,12 @@ data sample_data;
 run;
 
 proc format;
-    value $gender_fmt
+    value $gender
     'M' = 'Male'
     'F' = 'Female'
     ;
 
-    value age_group_fmt
+    value age_group
     low - 20 = 'Under 20'
     21 - 30 = '21-30'
     31 - 40 = '31-40'
@@ -27,7 +27,7 @@ run;
 /* Apply the format to the dataset */
 proc datasets library=work nodetails;
     modify sample_data;
-    format gender $gender_fmt. age age_group_fmt.;
+    format gender $gender. age age_group.;
 quit;
 
 %data_dictionary(

@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Return variable names for a SAS dataset
     \details    Example: %put %get_vars(dataset);
     \author     Maxime Blouin

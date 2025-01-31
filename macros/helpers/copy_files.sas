@@ -1,6 +1,6 @@
 /**
     \file       copy_files.sas
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Copy files from a directory to another directory
     \detail     Copy files from a directory to another directory using regular expression pattern to match files
     \author     Maxime Blouin

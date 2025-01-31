@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Return number of observations in a SAS dataset.
 
     \details    Return number of logical observations (deleted obeservations are not counted) in a SAS dataset.

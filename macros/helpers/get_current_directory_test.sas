@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS_TEST
+    \ingroup    HELPERS_TEST
     \brief      Tests for get_current_directory.sas
     \author     Maxime Blouin
     \date       22JUL2024

@@ -73,5 +73,6 @@ options append=sasautos=(
 
 /* Assign a library reference to the data directory */
 libname DATA "%sysfunc(pathname(HOME))/CommercialInsurance/data/";
+libname TEST "%sysfunc(pathname(HOME))/CommercialInsurance/data/test/";
 
 /** \endcond */

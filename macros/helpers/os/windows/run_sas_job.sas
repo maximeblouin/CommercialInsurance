@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    HELPERS_OS_WINDOWS
+    \ingroup    WINDOWS
     \brief      Run a SAS job on Windows
     \details    This macro is used to run a SAS job on Windows and
                 capture the log output to a specified location.

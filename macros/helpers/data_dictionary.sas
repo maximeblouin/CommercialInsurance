@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS
+    \ingroup    HELPERS
     \brief      Macro for generating a data dictionary
     \details    This macro generates a data dictionary for specified datasets,
                 including variable information and formats.

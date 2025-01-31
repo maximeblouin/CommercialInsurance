@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Return the folder path of a filename or pathname
     \details    Extract the folder path from a given file path by finding the
         position of the last backslash and then extracting the substring up

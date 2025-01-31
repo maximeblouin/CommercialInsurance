@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      List folders matching a pattern in a directory
     \details    Example: Execute the macro in a libname statement to create
                 a library with the folders matching the pattern.:

@@ -16,19 +16,45 @@
     \defgroup   COMMERCIAL_INSURANCE Commercial Insurance
     \brief      Commercial Insurance Project
 
-        \defgroup   MACROS Macro
-        \brief      SAS macros to help the project
-        \ingroup    COMMERCIAL_INSURANCE
 
-            \defgroup   HELPERS Helpers
-            \brief      SAS macros to help the project
-            \ingroup    MACROS
+    \defgroup   MACROS Macro
+    \brief      SAS macros for the commercial insurance project
+    \ingroup    COMMERCIAL_INSURANCE
 
-            \defgroup   OPTIMISATION Optimisation Tools
-            \brief      SAS macros toolkit to optimise
-            \ingroup    MACROS
+    \defgroup   CLEANING_DATA Cleaning Data
+    \brief      SAS macros for data cleaning tasks
+    \ingroup    MACROS
 
-    \defgroup   HELPERS_TEST Test Scenarios for macros helpers
-    \brief      Tests for the SAS macros helpers in the project
+    \defgroup   DATAMODELING Data Modeling
+    \brief      SAS macros for data modeling tasks
+    \ingroup    MACROS
+
+    \defgroup   HELPERS Helpers
+    \brief      SAS macros to help the project
+    \ingroup    MACROS
+
+    \defgroup   OS Operating System
+    \brief      SAS macros to help with operating system tasks
+    \ingroup    HELPERS
+
+    \defgroup   WINDOWS Windows
+    \brief      SAS macros to help with Windows tasks
+    \ingroup    OS
+
+    \defgroup   OPTIMISATION Optimisation Tools
+    \brief      SAS macros toolkit to optimise
+    \ingroup    MACROS
+
+
+    \defgroup   TEST Test
+    \brief      SASUnit test scenarios
+    \ingroup    COMMERCIAL_INSURANCE
+
+    \defgroup   DATAMODELING_TEST Test Scenarios for data modeling macros
+    \brief      Tests for the data modeling macros
+    \ingroup    TEST
+
+    \defgroup   HELPERS_TEST Test Scenarios for helpers macros
+    \brief      Tests for the helpers macros
     \ingroup    TEST
 */

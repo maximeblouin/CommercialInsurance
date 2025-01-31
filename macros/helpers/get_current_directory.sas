@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Return the current working directory
     \details    Example: %put %get_current_directory();
                 Example: %let cwd = %get_current_directory();

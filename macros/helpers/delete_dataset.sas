@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Supprime le fichier de données spécifié
     \author     Maxime Blouin
     \date       24OCT2023

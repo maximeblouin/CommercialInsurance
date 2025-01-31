@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Compress a file in a zip archive
     \author     Maxime Blouin
     \date       22JUL2024

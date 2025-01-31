@@ -64,7 +64,7 @@
    %IF %unquote(&i_condition.) %THEN %DO;
       1
       %_issue&l_messageType.Message(&g_currentLogger., --------------------------------------------------------------------------------)
-      %_issue&l_messageType.Message(&g_currentLogger., [&i_errorcode.] in Makro &i_macroname %str(%()Condition: &i_condition%str(%)))
+      %_issue&l_messageType.Message(&g_currentLogger., [&i_errorcode.] in Macro &i_macroname %str(%()Condition: &i_condition%str(%)))
       %IF (%nrbquote(&i_text.) NE %str()) %THEN %DO;
          %_issue&l_messageType.Message(&g_currentLogger., --------------------------------------------------------------------------------)
          %_issue&l_messageType.Message(&g_currentLogger., MessageText: &i_text.)

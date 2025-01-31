@@ -1,16 +1,13 @@
 /**
     \file
-    \ingroup    MACROS_HELPERS
+    \ingroup    HELPERS
     \brief      Delete all files in a directory amd subdirectories.
     \author     Maxime Blouin
     \date       01MAY2024
     \parm       i_path Full path of directory
     \parm       i_recursive 1: Search recursively in subdirectories, default is 0
     \remark     Example: %delete_files(i_dir=&SASUSERS.env_sas\doc\sasunit, i_recursive=1);
-*/
-
-/** \cond */
-
+*/ /** \cond */
 %macro delete_files(
     i_path /*Full path of directory*/,
     i_recursive=0);
@@ -36,5 +33,4 @@
         i_library=work);
 
 %mend delete_files;
-
 /** \endcond */

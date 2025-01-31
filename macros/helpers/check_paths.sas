@@ -1,6 +1,6 @@
 /**
     \file
-    \ingroup    MACROS
+    \ingroup    HELPERS
     \brief      Macro to check if a file or directory exists
     \details    This macro checks if the specified file or directory exists.
     \author     Maxime Blouin
