@@ -16,7 +16,7 @@
     \param      i_original_dsn The input dataset to normalize.
     \param      i_primary_keys The primary key(s) of the dimension.
     \param      i_attributes The attributes in the i_original_dsn to normalize.
-    \param      i_sum_attributes The attributes to sum in the i_original_dsn.
+    \param      i_sum_attributes The attributes to sum in the i_original_dsn. (optional)
     \param      o_fact_dataset The output fact table to normalize.
     \param      o_foreign_key The foreign key to the dimension table.
     \param      o_dim_dataset The output dimension table.
@@ -62,7 +62,6 @@
     %if %length(&i_original_dsn) eq 0
         or %length(&i_primary_keys) eq 0
         or %length(&i_attributes) eq 0
-        or %length(&i_sum_attributes) eq 0
         or %length(&o_fact_dataset) eq 0
         or %length(&o_foreign_key) eq 0
         or %length(&o_dim_dataset) eq 0 %then %do;
@@ -73,8 +72,8 @@
     /* Check that `i_primary_keys` and `i_attributes` are valid column
         names in `i_original_dsn`. */
     %let dsid=%sysfunc(open(&i_original_dsn, i));
-    %do i = 1 %to %sysfunc(countw(&i_primary_keys &i_attributes));
-        %let l_col = %scan(&i_primary_keys &i_attributes, &i);
+    %do i = 1 %to %sysfunc(countw(&i_primary_keys &i_attributes &i_sum_attributes));
+        %let l_col = %scan(&i_primary_keys &i_attributes &i_sum_attributes, &i);
         %let l_dsncol = %sysfunc(varnum(&dsid, &l_col));
         %if &l_dsncol eq 0 %then %do;
             %put ERROR: Column &l_col not found in &i_original_dsn;
@@ -84,17 +83,29 @@
     %let rc=%sysfunc(close(&dsid));
 
     /* Section: Dimension Table Creation */
-    proc summary nway missing data=&i_original_dsn;
-        class &i_primary_keys &i_attributes;
-        var &i_sum_attributes.;
-        output
-            out=&o_dim_dataset. (drop=_type_ _freq_)
-            sum=;
-    run;
+    %if %length(&i_sum_attributes) eq 0 %then %do;
+        /* Create the Dimension Table without summary statistics */
+        proc sort nodupkey
+            data=&i_original_dsn (keep=&i_primary_keys &i_attributes)
+            out=&o_dim_dataset;
+
+            by _ALL_;
+        run;
+    %end;
+    %else %do;
+        /* Create the Dimension Table with summary statistics */
+        proc summary nway missing data=&i_original_dsn;
+            class &i_primary_keys &i_attributes;
+            var &i_sum_attributes;
+            output
+                out=&o_dim_dataset (drop=_type_ _freq_)
+                sum=;
+        run;
+    %end;
 
     /* Warns if the primary keys are not unique */
     %local l_sql_primary_keys;
-    %let l_sql_primary_keys = %sysfunc(tranwrd(%sysfunc(compbl(%str(&i_primary_keys))), %str( ), %str(,)));
+    %let l_sql_primary_keys=%sysfunc(tranwrd(%sysfunc(compbl(%str(&i_primary_keys))), %str( ), %str(,)));
     %put &=l_sql_primary_keys;
 
     %let l_error = 0;
@@ -109,7 +120,7 @@
 
     /* Log warning if primary keys are not unique */
     %if &l_error > 0 %then %do;
-        %put WARNING: Primary keys are not unique in &o_dim_dataset;
+        %put WARNING: Primary keys are not unique in &o_dim_dataset..;
     %end;
 
     /* Assign a Unique Key for the Dimension Table */
@@ -117,26 +128,24 @@
         retain &o_foreign_key;
         set &o_dim_dataset;
 
-        attrib &o_foreign_key.
+        attrib &o_foreign_key
             length=8 format=best12. informat=best12.
             label="Unique Key for Dimension Table";
         &o_foreign_key = _n_;
     run;
 
     /* Section: Fact Table Normalization */
-    /* Add quotes to attributes and primary keys, and replace spaces with commas */
+    /* Add single quotes to attributes and primary keys, and replace spaces with commas. */
     %let l_defineKeys = %sysfunc(tranwrd(%sysfunc(compbl(%str(%'&i_primary_keys &i_attributes%'))), %str( ), %str(%',%')));
-    %put Define Keys: &l_defineKeys;
 
-    /* Remove the primary keys from the attributes list */
+    /* Remove the primary keys from the attributes list. */
     %let l_remove_attributes = &i_attributes;
     %do i = 1 %to %sysfunc(countw(&i_primary_keys));
         %let l_remove_attributes = %sysfunc(tranwrd(&l_remove_attributes, %scan(&i_primary_keys, &i), ));
         %put Removed %scan(&i_primary_keys, &i) from &l_remove_attributes;
     %end;
 
-    %put Attributes to remove: &l_remove_attributes;
-
+    %put Attributes to remove: &l_remove_attributes..;
 
     /* Join back with the Fact Table using HASH OBJECT */
     data &o_fact_dataset;
@@ -148,13 +157,13 @@
         end;
         set &i_original_dsn;
 
-        attrib &o_foreign_key.
+        attrib &o_foreign_key
             length=8 format=best12. informat=best12.
             label="Unique Key for &o_dim_dataset. Dimension Table";
 
         /* Handle missing cases */
         if dim.find() ne 0 then do;
-            &o_foreign_key. = .;
+            &o_foreign_key = .;
             put "WARNING: Foreign key not assigned for record in " _n_;
         end;
 
@@ -162,15 +171,15 @@
         drop &l_remove_attributes;
     run;
 
-    /* Check that all Dimension IDs are assigned */
+    /* Check that all Dimension IDs are assigned. */
     %let l_error = 0;
     proc sql noprint;
         select count(*) into :l_error
         from &o_fact_dataset
-        where &o_foreign_key. is missing;
+        where &o_foreign_key is missing;
     quit;
 
-    /* Log warning if foreign keys are not assigned */
+    /* Log warning if foreign keys are not assigned. */
     %if &l_error > 0 %then %do;
         %put WARNING: Foreign keys are not assigned in &o_fact_dataset;
     %end;
@@ -178,6 +187,9 @@
     /* Log Normalized Tables */
     %put Normalized Fact Table: &o_fact_dataset;
     %put Normalized Dimension Table: &o_dim_dataset;
+    %put Primary Keys: &i_primary_keys;
+    %put Attributes: &i_attributes;
+    %put Sum Attributes: &i_sum_attributes;
 
 %mend normalize_dimension;
 
