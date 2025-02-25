@@ -97,6 +97,7 @@
     %let l_sql_primary_keys = %sysfunc(tranwrd(%sysfunc(compbl(%str(&i_primary_keys))), %str( ), %str(,)));
     %put &=l_sql_primary_keys;
 
+    %let l_error = 0;
     proc sql noprint;
         select count(*) into :l_error
         from (
@@ -162,6 +163,7 @@
     run;
 
     /* Check that all Dimension IDs are assigned */
+    %let l_error = 0;
     proc sql noprint;
         select count(*) into :l_error
         from &o_fact_dataset
