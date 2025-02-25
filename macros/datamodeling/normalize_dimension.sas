@@ -11,80 +11,85 @@
                 - Input Parameters Validation
                 - Dimension Table Creation
                 - Fact Table Normalization
+                - Summary Statistics
 
-    \param      i_original_dsn The input dataset to normalize
-    \param      i_primary_keys The primary key of the dimension
-    \param      i_attributes The attributes in the i_original_dsn to normalize
-    \param      o_fact_dataset The output fact table to normalize
-    \param      o_foreign_key The foreign key to the dimension table
-    \param      o_dim_dataset The output dimension to normalize
+    \param      i_original_dsn The input dataset to normalize.
+    \param      i_primary_keys The primary key(s) of the dimension.
+    \param      i_attributes The attributes in the i_original_dsn to normalize.
+    \param      i_sum_attributes The attributes to sum in the i_original_dsn.
+    \param      o_fact_dataset The output fact table to normalize.
+    \param      o_foreign_key The foreign key to the dimension table.
+    \param      o_dim_dataset The output dimension table.
 
-    \remark     Here's an example usage of the %normalize_dimension macro:
+    \remark     Example usage of the %normalize_dimension macro:
+                <pre><code>
                 %normalize_dimension(
                     i_original_dsn=FactTransactions,
                     i_primary_keys=PolicyNumber RenewalCycle,
                     i_attributes=PolicyNumber RenewalCycle PolicyType
                         PolicyStatus PolicyStartDate PolicyEndDate,
+                    i_sum_attributes=TransactionAmount,
                     o_fact_dataset=FactTransactionsNormalized,
                     o_foreign_key=PolicyID,
                     o_dim_dataset=DimPolicy);
+                <\pre><\code>
 
     \remark     The o_fact_dataset can be the same as the i_original_dsn. The
                 macro will overwrite the dataset if it already exists.
     \remark     The dimension will be normalized based on the primary keys and
-                attributes provided. But the primary keys will be kept in the
+                attributes provided. The primary keys will be kept in the
                 fact table because they may be needed to normalize other
                 dimensions. They should be removed manually if needed.
-    \return     Returns the normalized fact and dimension datasets
+    \remark     Error handling includes checks for missing parameters and
+                invalid column names.
+    \remark     Warnings are logged if primary keys are not unique or if
+                foreign keys are not assigned in the fact table.
+    \return     Returns the normalized fact and dimension datasets.
 */ /** \cond */
 
 %macro normalize_dimension(
     i_original_dsn=,
     i_primary_keys=,
     i_attributes=,
+    i_sum_attributes=,
     o_fact_dataset=,
     o_foreign_key=,
     o_dim_dataset=);
 
     /* Section: Input Parameters Validatation */
+
     /* Ensure all parameters are provided. */
     %if %length(&i_original_dsn) eq 0
         or %length(&i_primary_keys) eq 0
         or %length(&i_attributes) eq 0
+        or %length(&i_sum_attributes) eq 0
         or %length(&o_fact_dataset) eq 0
         or %length(&o_foreign_key) eq 0
         or %length(&o_dim_dataset) eq 0 %then %do;
         %put ERROR: Missing required parameters.;
-        %return;
+        %abort cancel;
     %end;
 
-    /* Check that `i_primary_keys` are valid column names in `i_original_dsn`.*/
+    /* Check that `i_primary_keys` and `i_attributes` are valid column
+        names in `i_original_dsn`. */
     %let dsid=%sysfunc(open(&i_original_dsn, i));
-    %do i = 1 %to %sysfunc(countw(&i_primary_keys));
-        %let l_col = %scan(&i_primary_keys, &i);
+    %do i = 1 %to %sysfunc(countw(&i_primary_keys &i_attributes));
+        %let l_col = %scan(&i_primary_keys &i_attributes, &i);
         %let l_dsncol = %sysfunc(varnum(&dsid, &l_col));
         %if &l_dsncol eq 0 %then %do;
             %put ERROR: Column &l_col not found in &i_original_dsn;
-        %end;
-    %end;
-    %let rc=%sysfunc(close(&dsid));
-
-    /* Check that `i_attributes` are valid column names in `i_original_dsn`.*/
-    %let dsid=%sysfunc(open(&i_original_dsn, i));
-    %do i = 1 %to %sysfunc(countw(&i_attributes));
-        %let l_col = %scan(&i_attributes, &i);
-        %let l_dsncol = %sysfunc(varnum(&dsid, &l_col));
-        %if &l_dsncol eq 0 %then %do;
-            %put ERROR: Column &l_col not found in &i_original_dsn;
+            %abort cancel;
         %end;
     %end;
     %let rc=%sysfunc(close(&dsid));
 
     /* Section: Dimension Table Creation */
-    proc sort data=&i_original_dsn(
-            keep=&i_primary_keys &i_attributes)
-              out=&o_dim_dataset nodupkey;
-        by &i_primary_keys &i_attributes;
+    proc summary nway missing data=&i_original_dsn;
+        class &i_primary_keys &i_attributes;
+        var &i_sum_attributes.;
+        output
+            out=&o_dim_dataset. (drop=_type_ _freq_)
+            sum=;
     run;
 
     /* Warns if the primary keys are not unique */

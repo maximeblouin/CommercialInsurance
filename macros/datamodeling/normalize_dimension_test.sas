@@ -23,20 +23,21 @@
             PolicyType char(10),
             PolicyStatus char(10),
             PolicyStartDate date format=date9.,
-            PolicyEndDate date format=date9.
+            PolicyEndDate date format=date9.,
+            TransactionAmount num
         );
 
         insert into test.FactTransactions1
-        values (0, 'Policy123', 1, 1, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd)
-        values (1, 'Policy123', 1, 1, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd)
-        values (2, 'Policy456', 2, 1, 'Home', 'Inactive', '01JAN2025'd, '31DEC2025'd)
-        values (3, 'Policy789', 3, 1, 'Corpo', 'Active', '01JAN2025'd, '31DEC2025'd)
-        values (4, 'Policy123', 1, 2, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd)
-        values (5, 'Policy456', 2, 2, 'Home', 'Inactive', '01JAN2025'd, '31DEC2025'd)
-        values (6, 'Policy789', 3, 2, 'Corpo', 'Active', '01JAN2025'd, '31DEC2025'd)
-        values (7, 'Policy123', 1, 3, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd)
-        values (8, 'Policy456', 2, 3, 'Home', 'Inactive', '01JAN2025'd, '31DEC2025'd)
-        values (9, 'Policy789', 3, 3, 'Corpo', 'Active', '01JAN2025'd, '31DEC2025'd);
+        values (0, 'Policy123', 1, 1, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd, 100)
+        values (1, 'Policy123', 1, 1, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd, 200)
+        values (2, 'Policy456', 2, 1, 'Home', 'Inactive', '01JAN2025'd, '31DEC2025'd, 300)
+        values (3, 'Policy789', 3, 1, 'Corpo', 'Active', '01JAN2025'd, '31DEC2025'd, 400)
+        values (4, 'Policy123', 1, 2, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd, 150)
+        values (5, 'Policy456', 2, 2, 'Home', 'Inactive', '01JAN2025'd, '31DEC2025'd, 600)
+        values (6, 'Policy789', 3, 2, 'Corpo', 'Active', '01JAN2025'd, '31DEC2025'd, 700)
+        values (7, 'Policy123', 1, 3, 'Auto', 'Active', '01JAN2025'd, '31DEC2025'd, 200)
+        values (8, 'Policy456', 2, 3, 'Home', 'Inactive', '01JAN2025'd, '31DEC2025'd, 300)
+        values (9, 'Policy789', 3, 3, 'Corpo', 'Active', '01JAN2025'd, '31DEC2025'd, 150);
     quit;
 
     %normalize_dimension(
@@ -44,11 +45,12 @@
         i_primary_keys=PolicyNumber RenewalCycle,
         i_attributes=PolicyNumber RenewalCycle PolicyType
             PolicyStatus PolicyStartDate PolicyEndDate,
-        o_fact_dataset=FactTransactions1,
+        i_sum_attributes=TransactionAmount,
+        o_fact_dataset=test.FactTransactions1,
         o_foreign_key=PolicyID,
         o_dim_dataset=test.DimPolicy);
 
-    /* Validate Dimension Table */
+    /* Validate that Primary Keys are Unique in Dimension Table */
     proc sql;
         select count(*) into :dim_count from test.DimPolicy;
         select count(distinct PolicyID) into :dim_distinct from test.DimPolicy;
@@ -59,8 +61,17 @@
     %end;
 
     /* Validate that Primary Keys are in Fact Table */
+    proc sql;
+        select count(*) into :pk_missing
+        from test.FactTransactions1
+        where PolicyNumber is missing or RenewalCycle is missing;
+    quit;
 
-    /* Validate Fact Table Foreign Key Assignment */
+    %if &pk_missing > 0 %then %do;
+        %put ERROR: Missing primary keys in Fact Table;
+    %end;
+
+    /* Validate that Foreign Keys are in Fact Table */
     proc sql;
         select count(*) into :fk_missing
         from test.FactTransactions1
