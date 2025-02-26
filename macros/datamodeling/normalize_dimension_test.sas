@@ -4,7 +4,8 @@
     \author     Maxime Blouin
     \date       29JAN2025
     \brief      Tests for normalize_dimension.sas
-    \details    This file contains test scenarios for the normalize_dimension macro.
+    \details    This file contains test scenarios for the
+                normalize_dimension macro.
     \remark     Test scenarios should cover the following cases:
 */ /** \cond */
 
@@ -41,12 +42,10 @@
     quit;
 
     %normalize_dimension(
-        i_original_dsn=test.FactTransactions1,
+        io_fact_dsn=test.FactTransactions1,
         i_primary_keys=PolicyNumber RenewalCycle,
-        i_attributes=PolicyNumber RenewalCycle PolicyType
-            PolicyStatus PolicyStartDate PolicyEndDate,
+        i_attributes=PolicyType PolicyStatus PolicyStartDate PolicyEndDate,
         i_sum_attributes=TransactionAmount,
-        o_fact_dataset=test.FactTransactions1,
         o_foreign_key=PolicyID,
         o_dim_dataset=test.DimPolicy);
 

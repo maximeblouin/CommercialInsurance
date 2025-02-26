@@ -13,29 +13,25 @@
                 - Fact Table Normalization
                 - Summary Statistics
 
-    \param      i_original_dsn The input dataset to normalize.
+    \param      io_fact_dsn The fact fact table to normalize.
     \param      i_primary_keys The primary key(s) of the dimension.
-    \param      i_attributes The attributes in the i_original_dsn to normalize.
-    \param      i_sum_attributes The attributes to sum in the i_original_dsn. (optional)
-    \param      o_fact_dataset The output fact table to normalize.
+    \param      i_attributes The attributes in the io_fact_dsn to normalize.
+    \param      i_sum_attributes The attributes to sum in the io_fact_dsn. (optional)
     \param      o_foreign_key The foreign key to the dimension table.
     \param      o_dim_dataset The output dimension table.
 
     \remark     Example usage of the %normalize_dimension macro:
                 <pre><code>
                 %normalize_dimension(
-                    i_original_dsn=FactTransactions,
+                    io_fact_dsn=model.FactTransactions,
                     i_primary_keys=PolicyNumber RenewalCycle,
-                    i_attributes=PolicyNumber RenewalCycle PolicyType
-                        PolicyStatus PolicyStartDate PolicyEndDate,
+                    i_attributes=PolicyType PolicyStatus PolicyStartDate
+                        PolicyEndDate,
                     i_sum_attributes=TransactionAmount,
-                    o_fact_dataset=FactTransactionsNormalized,
                     o_foreign_key=PolicyID,
-                    o_dim_dataset=DimPolicy);
+                    o_dim_dataset=model.DimPolicy);
                 <\pre><\code>
 
-    \remark     The o_fact_dataset can be the same as the i_original_dsn. The
-                macro will overwrite the dataset if it already exists.
     \remark     The dimension will be normalized based on the primary keys and
                 attributes provided. The primary keys will be kept in the
                 fact table because they may be needed to normalize other
@@ -48,21 +44,19 @@
 */ /** \cond */
 
 %macro normalize_dimension(
-    i_original_dsn=,
+    io_fact_dsn=,
     i_primary_keys=,
     i_attributes=,
     i_sum_attributes=,
-    o_fact_dataset=,
     o_foreign_key=,
     o_dim_dataset=);
 
     /* Section: Input Parameters Validatation */
 
     /* Ensure all parameters are provided. */
-    %if %length(&i_original_dsn) eq 0
+    %if %length(&io_fact_dsn) eq 0
         or %length(&i_primary_keys) eq 0
         or %length(&i_attributes) eq 0
-        or %length(&o_fact_dataset) eq 0
         or %length(&o_foreign_key) eq 0
         or %length(&o_dim_dataset) eq 0 %then %do;
         %put ERROR: Missing required parameters.;
@@ -70,23 +64,25 @@
     %end;
 
     /* Check that `i_primary_keys` and `i_attributes` are valid column
-        names in `i_original_dsn`. */
-    %let dsid=%sysfunc(open(&i_original_dsn, i));
+        names in `io_fact_dsn`. */
+    %let dsid=%sysfunc(open(&io_fact_dsn, i));
     %do i = 1 %to %sysfunc(countw(&i_primary_keys &i_attributes &i_sum_attributes));
         %let l_col = %scan(&i_primary_keys &i_attributes &i_sum_attributes, &i);
         %let l_dsncol = %sysfunc(varnum(&dsid, &l_col));
         %if &l_dsncol eq 0 %then %do;
-            %put ERROR: Column &l_col not found in &i_original_dsn;
+            %put ERROR: Column &l_col not found in &io_fact_dsn..;
             %abort cancel;
         %end;
     %end;
     %let rc=%sysfunc(close(&dsid));
 
+    /* Check that `o_foreign_key` is not in `io_original_dsn` */
+
     /* Section: Dimension Table Creation */
     %if %length(&i_sum_attributes) eq 0 %then %do;
         /* Create the Dimension Table without summary statistics */
         proc sort nodupkey
-            data=&i_original_dsn (keep=&i_primary_keys &i_attributes)
+            data=&io_fact_dsn (keep=&i_primary_keys &i_attributes)
             out=&o_dim_dataset;
 
             by _ALL_;
@@ -94,7 +90,7 @@
     %end;
     %else %do;
         /* Create the Dimension Table with summary statistics */
-        proc summary nway missing data=&i_original_dsn;
+        proc summary nway missing data=&io_fact_dsn;
             class &i_primary_keys &i_attributes;
             var &i_sum_attributes;
             output
@@ -134,59 +130,47 @@
         &o_foreign_key = _n_;
     run;
 
-    /* Section: Fact Table Normalization */
+    /* Section: Adds Foreign Key to Fact Table */
     /* Add single quotes to attributes and primary keys, and replace spaces with commas. */
     %let l_defineKeys = %sysfunc(tranwrd(%sysfunc(compbl(%str(%'&i_primary_keys &i_attributes%'))), %str( ), %str(%',%')));
 
-    /* Remove the primary keys from the attributes list. */
-    %let l_remove_attributes = &i_attributes;
-    %do i = 1 %to %sysfunc(countw(&i_primary_keys));
-        %let l_remove_attributes = %sysfunc(tranwrd(&l_remove_attributes, %scan(&i_primary_keys, &i), ));
-        %put Removed %scan(&i_primary_keys, &i) from &l_remove_attributes;
-    %end;
-
-    %put Attributes to remove: &l_remove_attributes..;
-
     /* Join back with the Fact Table using HASH OBJECT */
-    data &o_fact_dataset;
+    data &io_fact_dsn;
         if _n_ = 1 then do;
             declare hash dim(dataset:"&o_dim_dataset");
             dim.defineKey(&l_defineKeys);
             dim.defineData("&o_foreign_key.");
             dim.defineDone();
         end;
-        set &i_original_dsn;
+        set &io_fact_dsn;
 
         attrib &o_foreign_key
             length=8 format=best12. informat=best12.
-            label="Unique Key for &o_dim_dataset. Dimension Table";
+            label="Unique Key for &o_dim_dataset. dimension table";
 
         /* Handle missing cases */
         if dim.find() ne 0 then do;
             &o_foreign_key = .;
             put "WARNING: Foreign key not assigned for record in " _n_;
         end;
-
-        /* Drop attributes */
-        drop &l_remove_attributes;
     run;
 
     /* Check that all Dimension IDs are assigned. */
     %let l_error = 0;
     proc sql noprint;
         select count(*) into :l_error
-        from &o_fact_dataset
+        from &io_fact_dsn
         where &o_foreign_key is missing;
     quit;
 
     /* Log warning if foreign keys are not assigned. */
     %if &l_error > 0 %then %do;
-        %put WARNING: Foreign keys are not assigned in &o_fact_dataset;
+        %put WARNING: Foreign keys are not assigned in &io_fact_dsn;
     %end;
 
     /* Log Normalized Tables */
-    %put Normalized Fact Table: &o_fact_dataset;
-    %put Normalized Dimension Table: &o_dim_dataset;
+    %put Fact Table: &io_fact_dsn;
+    %put Dimension Table: &o_dim_dataset;
     %put Primary Keys: &i_primary_keys;
     %put Attributes: &i_attributes;
     %put Sum Attributes: &i_sum_attributes;
