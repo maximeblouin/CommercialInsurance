@@ -17,6 +17,7 @@
     \param      i_primary_keys The primary key(s) of the dimension.
     \param      i_attributes The attributes in the io_fact_dsn to normalize.
     \param      i_sum_attributes The attributes to sum in the io_fact_dsn. (optional)
+    \param      o_where The where clause to filter the fact table. (optional)
     \param      o_foreign_key The foreign key to the dimension table.
     \param      o_dim_dataset The output dimension table.
 
@@ -28,6 +29,7 @@
                     i_attributes=PolicyType PolicyStatus PolicyStartDate
                         PolicyEndDate,
                     i_sum_attributes=TransactionAmount,
+                    o_where=AmountType='Premium',
                     o_foreign_key=PolicyID,
                     o_dim_dataset=model.DimPolicy);
                 <\pre><\code>
@@ -48,6 +50,7 @@
     i_primary_keys=,
     i_attributes=,
     i_sum_attributes=,
+    o_where=1,
     o_foreign_key=,
     o_dim_dataset=);
 
@@ -77,20 +80,31 @@
     %let rc=%sysfunc(close(&dsid));
 
     /* Check that `o_foreign_key` is not in `io_original_dsn` */
+    %let dsid=%sysfunc(open(&io_fact_dsn, i));
+    %let l_dsncol = %sysfunc(varnum(&dsid, &o_foreign_key));
+    %if &l_dsncol ne 0 %then %do;
+        %put ERROR: Column &o_foreign_key already exists in &io_fact_dsn..;
+        %abort cancel;
+    %end;
+    %let rc=%sysfunc(close(&dsid));
 
     /* Section: Dimension Table Creation */
+    data &o_dim_dataset;
+        set &io_fact_dsn;
+        keep &i_primary_keys &i_attributes &i_sum_attributes;
+        if &o_where;
+    run;
+
     %if %length(&i_sum_attributes) eq 0 %then %do;
         /* Create the Dimension Table without summary statistics */
-        proc sort nodupkey
-            data=&io_fact_dsn (keep=&i_primary_keys &i_attributes)
-            out=&o_dim_dataset;
-
+        proc sort nodupkey data=&o_dim_dataset;
             by _ALL_;
         run;
     %end;
     %else %do;
         /* Create the Dimension Table with summary statistics */
-        proc summary nway missing data=&io_fact_dsn;
+        proc summary nway missing
+            data=&o_dim_dataset;
             class &i_primary_keys &i_attributes;
             var &i_sum_attributes;
             output
@@ -151,16 +165,18 @@
         /* Handle missing cases */
         if dim.find() ne 0 then do;
             &o_foreign_key = .;
-            put "WARNING: Foreign key not assigned for record in " _n_;
+            %if &o_where ne 1 %then %do;
+                put "WARNING: Foreign key not assigned for record in " _n_;
+            %end;
         end;
     run;
 
-    /* Check that all Dimension IDs are assigned. */
+    /* Check that all dimension IDs are assigned. */
     %let l_error = 0;
     proc sql noprint;
         select count(*) into :l_error
         from &io_fact_dsn
-        where &o_foreign_key is missing;
+        where &o_foreign_key is missing and &o_where;
     quit;
 
     /* Log warning if foreign keys are not assigned. */
@@ -169,10 +185,13 @@
     %end;
 
     /* Log Normalized Tables */
+    %put Normalization Information;
     %put Fact Table: &io_fact_dsn;
     %put Dimension Table: &o_dim_dataset;
     %put Primary Keys: &i_primary_keys;
     %put Attributes: &i_attributes;
+    %put Foreign Key: &o_foreign_key;
+    %put Where Clause: &o_where;
     %put Sum Attributes: &i_sum_attributes;
 
 %mend normalize_dimension;
