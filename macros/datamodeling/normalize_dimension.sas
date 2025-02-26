@@ -171,6 +171,12 @@
         end;
     run;
 
+    /* Set column order in the dimension dataset. */
+    data &o_dim_dataset;
+        retain &o_foreign_key &i_primary_keys &i_attributes &i_sum_attributes;
+        set &o_dim_dataset;
+    run;
+
     /* Check that all dimension IDs are assigned. */
     %let l_error = 0;
     proc sql noprint;
