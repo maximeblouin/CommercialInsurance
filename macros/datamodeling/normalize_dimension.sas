@@ -165,7 +165,7 @@
         /* Handle missing cases */
         if dim.find() ne 0 then do;
             &o_foreign_key = .;
-            %if &o_where ne 1 %then %do;
+            %if %str(&o_where) eq %str(1) %then %do;
                 put "WARNING: Foreign key not assigned for record in " _n_;
             %end;
         end;
