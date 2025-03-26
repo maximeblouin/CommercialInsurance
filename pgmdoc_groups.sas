@@ -29,6 +29,10 @@
     \brief      SAS macros for data modeling tasks
     \ingroup    MACROS
 
+    \defgroup   DATA_QUALITY Data Quality
+    \brief      SAS macros for data quality tasks
+    \ingroup    MACROS
+
     \defgroup   HELPERS Helpers
     \brief      SAS macros to help the project
     \ingroup    MACROS
