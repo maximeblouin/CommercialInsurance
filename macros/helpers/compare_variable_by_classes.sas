@@ -1,7 +1,8 @@
 /**
     \file
     \ingroup    HELPERS
-    \brief      Compare a numeric variable between two datasets for each class or class combination.
+    \brief      Compare a numeric variable between two datasets for each class or
+                class combination.
     \author     Maxime Blouin
     \date       31OCT2025
     \parm       i_dsn_base     Base dataset name (e.g., WORK.ds1)
@@ -12,8 +13,9 @@
     \parm       out            Output dataset for summary results (default=compare_results)
 
     \details
-        This macro compares a numeric variable between two datasets for each class or class combination.
-        It performs t-tests and outputs classes with statistically significant differences.
+        This macro compares a numeric variable between two datasets for each
+        class or class combination. It performs t-tests and outputs classes
+        with statistically significant differences.
 
         Steps:
         1. Validate datasets and variable existence.
@@ -128,20 +130,37 @@
     run;
 
     /*===============================================================
-      7. Perform t-tests (only for classes with both groups)
+    7. Perform t-tests (only for classes with both groups)
     ===============================================================*/
     ods graphics off;
-    proc sort data=combined; by _class_key_; run;
+    proc sort data=combined;
+        by _class_key_;
+    run;
 
+    /* Identify only valid classes that exist in both BASE and COMP */
     proc sql;
-        create table combined as
-        select *
+        create table _valid_classes as
+        select _class_key_
         from combined
-        group by _class_key_, _source_
-        having count(&i_variable) >= 2;
+        group by _class_key_
+        having count(distinct _source_) = 2;
     quit;
 
-    proc ttest data=combined;
+    /* Merge to keep only valid class keys */
+    proc sql;
+        create table combined_valid as
+        select a.*
+        from combined a
+        inner join _valid_classes b
+            on a._class_key_ = b._class_key_;
+    quit;
+
+    /* Run t-tests only on valid class combinations */
+    proc sort data=combined_valid;
+        by _class_key_;
+    run;
+
+    proc ttest data=combined_valid;
         class _source_;
         var &i_variable;
         by _class_key_;
@@ -149,12 +168,15 @@
     run;
     ods graphics on;
 
+    /* Clean up and deduplicate */
     data _ttests_clean;
         set _ttests(keep=_class_key_ Probt);
         rename Probt=p_value;
     run;
 
-    proc sort data=_ttests_clean nodupkey; by _class_key_; run;
+    proc sort data=_ttests_clean nodupkey;
+        by _class_key_;
+    run;
 
     /*===============================================================
       8. Split base and comp summaries for merging
@@ -217,11 +239,13 @@
         %let cls=%scan(&i_classes,&i);
 
         /* --- Build safe table name (truncate to 32 chars) --- */
-        %let tblname=%substr(&out._sum_&cls, 1, 32);
+        %let full_name=&out._sum_&cls;
+        %let name_length=%length(&full_name);
+        %let tblname=%substr(&full_name, 1, %sysfunc(min(&name_length,32)));
 
         /* --- Log warning if truncated --- */
-        %if %length(&out._sum_&cls) > 32 %then %do;
-            %put WARNING: Table name &out._sum_&cls exceeds 32 chars. Truncated to &tblname.;
+        %if &name_length > 32 %then %do;
+            %put WARNING: Table name &full_name exceeds 32 chars. Truncated to &tblname.;
         %end;
 
         proc sql;
@@ -268,7 +292,7 @@
     ===============================================================*/
     proc datasets lib=work nolist;
         delete _vars_base _vars_comp _vars_check _summary _ttests _ttests_clean
-               _base _comp _freqs _missing_classes combined;
+            _base _comp _freqs _missing_classes combined;
     quit;
 
 %mend compare_numeric_by_classes;
