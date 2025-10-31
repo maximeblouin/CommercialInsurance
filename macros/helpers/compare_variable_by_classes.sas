@@ -239,7 +239,7 @@
         %let cls=%scan(&i_classes,&i);
 
         /* --- Build safe table name (truncate to 32 chars) --- */
-        %let full_name=&out._sum_&cls;
+        %let full_name=&out._sum_by_class_&i;
         %let name_length=%length(&full_name);
         %let tblname=%substr(&full_name, 1, %sysfunc(min(&name_length,32)));
 
@@ -255,11 +255,11 @@
                 &cls as class_value length=64,
                 sum(case when _source_='BASE' then &i_variable else 0 end) as sum_base,
                 sum(case when _source_='COMP' then &i_variable else 0 end) as sum_comp,
-                calculated sum_base - calculated sum_comp as sum_net_diff,
+                calculated sum_base - calculated sum_comp format=comma32.2 as sum_net_diff,
                 case
                     when calculated sum_comp ne 0
                     then 100*(calculated sum_base - calculated sum_comp)/calculated sum_comp
-                end as sum_pct_diff
+                end format=percent8.2 as sum_pct_diff
             from combined
             group by &cls;
         quit;
