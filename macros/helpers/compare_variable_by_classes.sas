@@ -69,14 +69,40 @@
     %end;
 
     /*===============================================================
-      3. Combine datasets with source flag
+    3. Combine datasets with source flag (safe version)
     ===============================================================*/
+
+    /* 1. Compute maximum lengths across both datasets */
+    proc sql noprint;
+        create table _lenfix as
+        select name, type, max(length) as maxlen
+        from (
+            select name, type, length from dictionary.columns where libname=upcase(scan("&i_dsn_base",1,'.')) and memname=upcase(scan("&i_dsn_base",2,'.'))
+            union all
+            select name, type, length from dictionary.columns where libname=upcase(scan("&i_dsn_compare",1,'.')) and memname=upcase(scan("&i_dsn_compare",2,'.'))
+        )
+        group by name, type;
+    quit;
+
+    /* 2. Create LENGTH statement dynamically */
+    filename lenstmt temp;
+    data _null_;
+        set _lenfix end=last;
+        file lenstmt;
+        if type='char' then put 'length ' name ' $' maxlen ';';
+        if last then put ' ';
+    run;
+
+    /* 3. Apply harmonized lengths when combining datasets */
     data combined;
+        %include lenstmt;  /* ensures consistent lengths */
         set &i_dsn_base(in=a) &i_dsn_compare(in=b);
         length _source_ $5;
         if a then _source_='BASE';
         else if b then _source_='COMP';
     run;
+
+    filename lenstmt clear;
 
     /*===============================================================
       4. Build concatenated class key for multi-class comparison
@@ -251,29 +277,53 @@
         proc sql;
             create table &tblname as
             select
-                "&cls" length=64 as class,
-                &cls length=64 as class_value,
-                &i_variable length=64 as variable,
+                "&cls." as class,
+                &cls as class_value,
+                "&i_variable." as variable_name,
                 sum(case when _source_='BASE' then &i_variable else 0 end) as sum_base,
                 sum(case when _source_='COMP' then &i_variable else 0 end) as sum_comp,
                 calculated sum_base - calculated sum_comp format=comma32.2 as sum_net_diff,
                 case
-                    when calculated sum_comp ne 0
-                    then 100*(calculated sum_base - calculated sum_comp)/calculated sum_comp
+                    when calculated sum_base ne 0 then (calculated sum_net_diff)/calculated sum_base
+                    else .
                 end format=percent8.2 as sum_pct_diff
             from combined
             group by &cls;
         quit;
     %end;
 
-    /* --- Combine all sum by class tables into one --- */
+    /*===============================================================
+    9C. Combine all sum-by-class tables (safe and warning-free)
+    ===============================================================*/
 
-    data &out._sum_by_class;
-        set
-        %do i=1 %to &ncls;
-            &out._sum_%scan(&i_classes,&i)
-        %end;;
-    run;
+    /* Build list of valid per-class tables */
+    %let valid_tables=;
+
+    %do i=1 %to &ncls;
+        %let full_name=&out._sum_by_class_&i;
+        %let name_length=%length(&full_name);
+        %let tblname=%substr(&full_name,1,%sysfunc(min(&name_length,32)));
+
+        /* Append only if dataset exists */
+        %if %sysfunc(exist(&tblname)) %then %do;
+            %let valid_tables=&valid_tables &tblname;
+        %end;
+        %else %do;
+            %put NOTE: Skipping non-existent table &tblname..;
+        %end;
+    %end;
+
+    /* Combine and prevent truncation warnings */
+    %if %length(&valid_tables) %then %do;
+        data &out._sum_by_class;
+            length class $64;   /* Prevents "Multiple lengths" warning */
+            set &valid_tables;
+        run;
+        %put NOTE: Combined tables into &out._sum_by_class successfully.;
+    %end;
+    %else %do;
+        %put WARNING: No _sum_by_class_ tables found to combine.;
+    %end;
 
     /*===============================================================
       10. Display results
