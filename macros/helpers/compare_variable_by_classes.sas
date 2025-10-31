@@ -215,11 +215,20 @@
     %let ncls=%sysfunc(countw(&i_classes));
     %do i=1 %to &ncls;
         %let cls=%scan(&i_classes,&i);
+
+        /* --- Build safe table name (truncate to 32 chars) --- */
+        %let tblname=%substr(&out._sum_&cls, 1, 32);
+
+        /* --- Log warning if truncated --- */
+        %if %length(&out._sum_&cls) > 32 %then %do;
+            %put WARNING: Table name &out._sum_&cls exceeds 32 chars. Truncated to &tblname.;
+        %end;
+
         proc sql;
-            create table &out._sum_&cls as
+            create table &tblname as
             select
-                "&cls" as class length=32,
-                &cls as class_value,
+                "&cls" as class length=64,
+                &cls as class_value length=64,
                 sum(case when _source_='BASE' then &i_variable else 0 end) as sum_base,
                 sum(case when _source_='COMP' then &i_variable else 0 end) as sum_comp,
                 calculated sum_base - calculated sum_comp as sum_net_diff,
@@ -231,6 +240,8 @@
             group by &cls;
         quit;
     %end;
+
+    /* --- Combine all sum by class tables into one --- */
 
     data &out._sum_by_class;
         set
