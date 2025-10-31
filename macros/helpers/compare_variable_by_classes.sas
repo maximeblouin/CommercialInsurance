@@ -77,9 +77,9 @@
         create table _lenfix as
         select name, type, max(length) as maxlen
         from (
-            select name, type, length from dictionary.columns where libname=upcase(scan("&i_dsn_base",1,'.')) and memname=upcase(scan("&i_dsn_base",2,'.'))
+            select upcase(name) as name, type, length from dictionary.columns where libname=upcase(scan("&i_dsn_base",1,'.')) and memname=upcase(scan("&i_dsn_base",2,'.'))
             union all
-            select name, type, length from dictionary.columns where libname=upcase(scan("&i_dsn_compare",1,'.')) and memname=upcase(scan("&i_dsn_compare",2,'.'))
+            select upcase(name) as name, type, length from dictionary.columns where libname=upcase(scan("&i_dsn_compare",1,'.')) and memname=upcase(scan("&i_dsn_compare",2,'.'))
         )
         group by name, type;
     quit;
@@ -248,13 +248,13 @@
         create table &out._sum_by_combo as
         select
             _class_key_,
-            sum(case when _source_='BASE' then &i_variable else 0 end) as sum_base,
-            sum(case when _source_='COMP' then &i_variable else 0 end) as sum_comp,
-            calculated sum_base - calculated sum_comp as sum_net_diff,
+            sum(case when _source_='BASE' then &i_variable else 0 end) format=comma32.2 as sum_base,
+            sum(case when _source_='COMP' then &i_variable else 0 end) format=comma32.2 as sum_comp,
+            calculated sum_comp - calculated sum_base format=comma32.2 as sum_net_diff,
             case
-                when calculated sum_comp ne 0
-                then 100*(calculated sum_base - calculated sum_comp)/calculated sum_comp
-            end as sum_pct_diff
+                when calculated sum_base ne 0 then (calculated sum_net_diff)/calculated sum_base
+                else .
+            end format=percent8.2 as sum_pct_diff
         from combined
         group by _class_key_;
     quit;
@@ -280,8 +280,8 @@
                 "&cls." as class,
                 &cls as class_value,
                 "&i_variable." as variable_name,
-                sum(case when _source_='BASE' then &i_variable else 0 end) as sum_base,
-                sum(case when _source_='COMP' then &i_variable else 0 end) as sum_comp,
+                sum(case when _source_='BASE' then &i_variable else 0 end) format=comma32.2 as sum_base,
+                sum(case when _source_='COMP' then &i_variable else 0 end) format=comma32.2 as sum_comp,
                 calculated sum_base - calculated sum_comp format=comma32.2 as sum_net_diff,
                 case
                     when calculated sum_base ne 0 then (calculated sum_net_diff)/calculated sum_base
