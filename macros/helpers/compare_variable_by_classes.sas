@@ -253,6 +253,7 @@
             select
                 "&cls" as class length=64,
                 &cls as class_value length=64,
+                &i_variable as variable length=64,
                 sum(case when _source_='BASE' then &i_variable else 0 end) as sum_base,
                 sum(case when _source_='COMP' then &i_variable else 0 end) as sum_comp,
                 calculated sum_base - calculated sum_comp format=comma32.2 as sum_net_diff,
