@@ -57,10 +57,29 @@
     proc contents data=&i_dsn_compare out=_vars_comp(keep=name) noprint;
     run;
 
+    data _vars_base;
+        set _vars_base;
+        name = upcase(name);
+    run;
+
+    proc sort;
+        by name;
+    run;
+
+    data _vars_comp;
+        set _vars_comp;
+        name = upcase(name);
+    run;
+
+    proc sort;
+        by name;
+    run;
+
     data _vars_check;
         merge _vars_base(in=a) _vars_comp(in=b);
         by name;
-        if upcase(name)="%upcase(&i_variable)" and not (a and b) then call symputx('_missing_',1);
+        if upcase(name) eq upcase("&i_variable.") and not (a and b) then
+            call symputx('_missing_',1);
     run;
 
     %if &_missing_=1 %then %do;
